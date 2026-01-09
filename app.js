@@ -4,328 +4,237 @@
   const $ = (sel, el = document) => el.querySelector(sel);
   const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 
-  // ===== Content (inkl. kontaktText pro Zweig) =====
+  // === CONTACT ===
+  const EMAIL_TO = "rebelle.media.creator@gmail.com";
+
+  // WhatsApp international format (DE): +49 162 9471865 => 491629471865
+  // (ohne +, ohne Leerzeichen)
+  const WA_NUMBER = "491629471865";
+
+  // === LOCAL ANALYTICS (tracking-free, local-only) ===
+  // Speichert NUR auf dem Gerät (localStorage). Kein Server, keine Cookies, keine IDs.
+  const Analytics = (() => {
+    const KEY = "rb_vb_local_stats_v1";
+    const nowISO = () => new Date().toISOString();
+
+    function load() {
+      try {
+        return JSON.parse(localStorage.getItem(KEY) || "null") || {
+          createdAt: nowISO(),
+          views: 0,
+          opens: 0,
+          mails: 0,
+          whatsapps: 0,
+          nodes: {}
+        };
+      } catch {
+        return { createdAt: nowISO(), views: 0, opens: 0, mails: 0, whatsapps: 0, nodes: {} };
+      }
+    }
+
+    function save(data) {
+      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch {}
+    }
+
+    function inc(path, nodeId) {
+      const d = load();
+      d[path] = (d[path] || 0) + 1;
+      if (nodeId) {
+        d.nodes[nodeId] = d.nodes[nodeId] || { opens: 0, mails: 0, whatsapps: 0 };
+        if (path === "opens") d.nodes[nodeId].opens++;
+        if (path === "mails") d.nodes[nodeId].mails++;
+        if (path === "whatsapps") d.nodes[nodeId].whatsapps++;
+      }
+      d.updatedAt = nowISO();
+      save(d);
+      return d;
+    }
+
+    function reset() {
+      try { localStorage.removeItem(KEY); } catch {}
+      return load();
+    }
+
+    function get() { return load(); }
+
+    function exportJSON() {
+      const blob = new Blob([JSON.stringify(load(), null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "vermoegensbaum-local-stats.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 400);
+    }
+
+    return { inc, get, reset, exportJSON };
+  })();
+
+  // ===== Content (contactText pro Zweig) =====
   const NODES = {
     hub: {
       id: "hub",
-      type: "Hub",
+      type: "HUB",
       title: "Vermögensbaum",
       sub: "Überblick · Filter · Klick in die Zweige",
-      what:
-        "Du brauchst keine 27 Ideen. Du brauchst eine Idee, die wächst. Dieser Baum zeigt dir Wege, die du nebenbei starten kannst – mit klaren Schritten und realistischen Gewinnspannen.",
-      forWhom: [
-        "Wenn du Struktur willst statt Chaos.",
-        "Wenn du Optionen sehen willst, ohne dich zu verzetteln.",
-        "Wenn du Entscheidungen nach Zeit/Kapital/Reichweite treffen willst."
-      ],
-      steps: [
-        "Wähle deinen Stamm (Zeit, Kapital, Reichweite, Skill).",
-        "Klicke einen Ast an (Digitale Produkte / Services / Plattform).",
-        "Klicke einen Zweig: du bekommst Schritte + Gewinnspanne + Fehler.",
-        "Starte mit dem kleinsten umsetzbaren Schritt – heute."
-      ],
-      money: [
-        { left: "Ergebnis", right: "Klarheit + Fokus + Startplan" },
-        { left: "Hebel", right: "Skalieren statt schuften" }
-      ],
-      mistake:
-        "Zu viele Optionen ohne Filter → Lähmung. Und: Zu viel Lesen ohne Tun.",
-      cta:
-        "Wenn du willst, sag mir: Zeit/Woche + Startkapital + Reichweite. Dann mache ich dir aus dem Baum eine 7-Tage-Startsequenz.",
-      contactText:
-        "Hallo, ich bin ___ und würde gern mehr über den Vermögensbaum erfahren. Ich stehe gerade hier: ___."
+      what: "Du brauchst keine 27 Ideen. Du brauchst eine Idee, die wächst. Dieser Baum zeigt dir Wege, die du nebenbei starten kannst – mit klaren Schritten und realistischen Gewinnspannen.",
+      forWhom: ["Wenn du Struktur willst statt Chaos.","Wenn du Optionen sehen willst, ohne dich zu verzetteln.","Wenn du Entscheidungen nach Zeit/Kapital/Reichweite treffen willst."],
+      steps: ["Wähle deinen Stamm (Zeit, Kapital, Reichweite, Skill).","Klicke einen Ast an (Digitale Produkte / Services / Plattform).","Klicke einen Zweig: du bekommst Schritte + Gewinnspanne + Fehler.","Starte mit dem kleinsten umsetzbaren Schritt – heute."],
+      money: [{ left: "Ergebnis", right: "Klarheit + Fokus + Startplan" },{ left: "Hebel", right: "Skalieren statt schuften" }],
+      mistake: "Zu viele Optionen ohne Filter → Lähmung. Zu viel Lesen ohne Tun.",
+      cta: "Wenn du willst: schreib kurz Zeit/Woche + Startkapital + Thema – ich mache dir daraus einen 7-Tage-Startplan.",
+      contactText: "Hallo, ich bin ___ und würde gern mehr über den Vermögensbaum erfahren.\n\nMein Thema: ___\nZeit/Woche: ___\nStartkapital: ___\nIch brauche Hilfe bei: ___\n\nDanke!"
     },
 
     digital: {
       id: "digital",
-      type: "Ast",
+      type: "AST",
       title: "Digitale Produkte",
       sub: "Einmal bauen · oft verkaufen",
-      what:
-        "Du verkaufst kein PDF. Du verkaufst: Erleichterung, Abkürzung, Ordnung, Ergebnis.",
-      forWhom: [
-        "Wenn du erklären, strukturieren, vereinfachen kannst.",
-        "Wenn du weniger Zeit-gegen-Geld willst.",
-        "Wenn du Evergreen statt Dauerstress willst."
-      ],
-      steps: [
-        "Wähle 1 Schmerz, der heute nervt (nicht „nice to have“).",
-        "Definiere 1 Ergebnis (klar in einem Satz).",
-        "Baue ein kleines, sauberes Produkt (Guide/Template).",
-        "Landingpage + 10 Inhalte (Pins/Posts) → Verkauf."
-      ],
-      money: [
-        { left: "Richtwert", right: "500–10.000 €/Monat (je nach Produkt + Traffic)" },
-        { left: "Tempo", right: "mittel (dafür skalierbar)" }
-      ],
-      mistake: "Zu lang, zu allgemein, zu viel Wissen statt Schritte.",
-      cta:
-        "Willst du 10 Produktideen aus deinen Themen – inkl. Titel, Struktur, Preis, und Verkaufsargument?",
-      contactText:
-        "Hallo, ich bin ___ und würde gern wissen, welches digitale Produkt (Guide/Template) zu meinem Thema passt. Mein Thema: ___."
+      what: "Du verkaufst kein PDF. Du verkaufst: Erleichterung, Abkürzung, Ordnung, Ergebnis.",
+      forWhom: ["Wenn du erklären, strukturieren, vereinfachen kannst.","Wenn du weniger Zeit-gegen-Geld willst.","Wenn du Evergreen statt Dauerstress willst."],
+      steps: ["Wähle 1 Schmerz, der heute nervt.","Definiere 1 Ergebnis (1 Satz).","Baue ein kleines Produkt (Guide/Template).","Landingpage + 10 Inhalte → Verkauf."],
+      money: [{ left: "Richtwert", right: "500–10.000 €/Monat (je nach Produkt + Traffic)" },{ left: "Tempo", right: "mittel (dafür skalierbar)" }],
+      mistake: "Zu allgemein, zu lang, zu wenig Schritte.",
+      cta: "Sag mir dein Thema – ich mache dir 10 Produktideen + Struktur + Preis.",
+      contactText: "Hallo, ich bin ___ und möchte mit digitalen Produkten starten.\n\nMein Thema: ___\nIch denke an: Guide/Template/Bundle\nIch brauche Hilfe bei: Idee/Struktur/Preis/Landingpage\n\nDanke!"
     },
 
     mini_guides: {
       id: "mini_guides",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "Mini-Guides / PDFs",
       sub: "Die schnellste Form, Wissen in Geld zu verwandeln",
-      what:
-        "Ein Mini-Guide ist kein Buch. Er ist ein Werkzeug: kurz, konkret, umsetzbar.",
-      forWhom: [
-        "Wenig Zeit pro Woche.",
-        "Wenig Startkapital.",
-        "Du willst schnell einen ersten Euro sehen."
-      ],
-      steps: [
-        "Wähle 1 Problem, das Menschen sofort lösen wollen.",
-        "Schreibe 7 Schritte (max. 3 Seiten Inhalt + Checkliste).",
-        "Pack es in ein cleanes PDF.",
-        "Erstelle 1 Landingpage + 10 Pins/Posts.",
-        "Verkauf über Shop + Link in Bio."
-      ],
-      money: [
-        { left: "Preis", right: "9–29 €" },
-        { left: "2 Verkäufe/Tag", right: "ca. 540–1.740 €/Monat" },
-        { left: "5 Verkäufe/Tag", right: "ca. 1.350–4.350 €/Monat" }
-      ],
-      mistake:
-        "Zu viel Theorie. Zu wenig Schritt-für-Schritt. Und: Kein klarer Kaufgrund (Zeit sparen / Fehler vermeiden / Ergebnis).",
-      cta:
-        "Sag mir 1 Thema – ich mache dir daraus einen Mini-Guide: Titel, Inhaltsstruktur, Checkliste, Preis und Landingpage-Text.",
-      contactText:
-        "Hallo, ich bin ___ und würde gern mehr über Mini-Guides erfahren. Mein Thema ist: ___. Ich will damit starten, aber hänge bei: ___."
+      what: "Ein Mini-Guide ist kein Buch. Er ist ein Werkzeug: kurz, konkret, umsetzbar.",
+      forWhom: ["Wenig Zeit pro Woche.","Wenig Startkapital.","Du willst schnell einen ersten Euro sehen."],
+      steps: ["Wähle 1 Problem, das Menschen sofort lösen wollen.","Schreibe 7 Schritte (max. 3 Seiten + Checkliste).","PDF clean gestalten.","Landingpage + 10 Pins/Posts.","Verkauf über Shop + Link."],
+      money: [{ left: "Preis", right: "9–29 €" },{ left: "2 Verkäufe/Tag", right: "540–1.740 €/Monat" },{ left: "5 Verkäufe/Tag", right: "1.350–4.350 €/Monat" }],
+      mistake: "Zu viel Theorie. Kein klarer Kaufgrund.",
+      cta: "Sag mir 1 Thema – ich mache dir Titel + Struktur + Checkliste + Preis + Landingpage-Text.",
+      contactText: "Hallo, ich bin ___ und will einen Mini-Guide erstellen.\n\nMein Thema: ___\nZielgruppe: ___\nIch hänge bei: Hook/Struktur/Preis/Verkauf\n\nDanke!"
     },
 
     templates: {
       id: "templates",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "Templates",
       sub: "Menschen zahlen dafür, nicht bei null anfangen zu müssen",
-      what:
-        "Vorlagen, die Arbeit abnehmen: Content-Plan, Angebots-PDF, Kalender, Checklisten, Dashboards, Branding-Kits.",
-      forWhom: [
-        "Du kannst Systeme bauen.",
-        "Du liebst klare Strukturen.",
-        "Du willst Evergreen statt ständig neu."
-      ],
-      steps: [
-        "Entscheide eine Kategorie (Content / Business / Gesundheit / Planung).",
-        "Baue 1 Hero-Template + 10 Varianten.",
-        "Schreibe eine Anleitung: „So benutzt du es in 15 Minuten“.",
-        "Baue ein Bundle (Starter + Pro)."
-      ],
-      money: [
-        { left: "Preis", right: "19–79 € (Bundles 49–149 €)" },
-        { left: "30 Verkäufe/Monat à 49 €", right: "1.470 €" },
-        { left: "200 Verkäufe/Monat à 49 €", right: "9.800 €" }
-      ],
+      what: "Vorlagen, die Arbeit abnehmen: Content-Plan, Angebots-PDF, Checklisten, Dashboards, Kits.",
+      forWhom: ["Du kannst Systeme bauen.","Du liebst klare Strukturen.","Du willst Evergreen statt ständig neu."],
+      steps: ["1 Kategorie wählen.","1 Hero-Template + Varianten bauen.","15-Minuten-Anleitung schreiben.","Bundle (Starter + Pro) erstellen."],
+      money: [{ left: "Preis", right: "19–79 € (Bundles 49–149 €)" },{ left: "30 Verkäufe/Monat à 49 €", right: "1.470 €" },{ left: "200 Verkäufe/Monat à 49 €", right: "9.800 €" }],
       mistake: "Schön, aber ohne Nutzen. Template ohne Ergebnisversprechen = Deko.",
-      cta: "Willst du 10 Template-Ideen, die sich verkaufen + Bundle-Struktur + Shop-Texte?",
-      contactText:
-        "Hallo, ich bin ___ und würde gern wissen, welche Template-Idee zu meinem Thema passt. Mein Thema: ___. Ziel: ___."
+      cta: "Sag mir dein Thema – ich baue dir 10 Template-Ideen + Bundle-Struktur + Shop-Text.",
+      contactText: "Hallo, ich bin ___ und möchte Templates verkaufen.\n\nThema: ___\nZiel: ___\nIch brauche Hilfe bei: Bundle/Preis/Struktur/Shoptext\n\nDanke!"
     },
 
     services: {
       id: "services",
-      type: "Ast",
+      type: "AST",
       title: "Services nebenbei",
       sub: "Schneller Cashflow · Marktfeedback · später skalieren",
-      what:
-        "Services sind der Turbo. Nicht das Ziel. Du nutzt sie, um Geld + Marktfeedback zu bekommen – und daraus später Produkte zu bauen.",
-      forWhom: [
-        "Wenn du schnell Umsatz brauchst.",
-        "Wenn du Proof (Beispiele) aufbauen willst.",
-        "Wenn du später aus Services Systeme machst."
-      ],
-      steps: [
-        "Wähle 1 Service mit klarer Grenze (Ergebnis, Lieferzeit, Preis).",
-        "Baue 1 Vorher/Nachher-Beispiel.",
-        "Pitch oder poste konsequent mit CTA.",
-        "Dokumentiere: Welche Anfragen kommen? Daraus baust du Produkte."
-      ],
-      money: [
-        { left: "Richtwert", right: "500–8.000 €/Monat (je nach Angebot + Frequenz)" },
-        { left: "Tempo", right: "schnell (dafür weniger skalierbar)" }
-      ],
-      mistake: "„Ich kann alles“ → niemand kauft. Fokus schlägt Talent.",
-      cta:
-        "Willst du 3 Service-Angebote, die sauber abgrenzen (Einsteiger/Pro/Retainer) – als Copy-Paste Text?",
-      contactText:
-        "Hallo, ich bin ___ und möchte nebenbei mit einem klaren Service starten. Ich kann gut: ___. Ich brauche Hilfe bei Angebot + Preis + Grenze."
+      what: "Services sind der Turbo. Nicht das Ziel. Du nutzt sie für Cash + Proof – und baust daraus später Produkte.",
+      forWhom: ["Wenn du schnell Umsatz brauchst.","Wenn du Proof aufbauen willst.","Wenn du aus Services Systeme machen willst."],
+      steps: ["1 Service mit klarer Grenze definieren.","1 Vorher/Nachher-Beispiel bauen.","Konsequent posten/pitchen.","Fragen dokumentieren → Produkt bauen."],
+      money: [{ left: "Richtwert", right: "500–8.000 €/Monat (je nach Angebot + Frequenz)" },{ left: "Tempo", right: "schnell (dafür weniger skalierbar)" }],
+      mistake: "„Ich kann alles“ → niemand kauft.",
+      cta: "Sag mir, was du kannst – ich mache dir 3 Angebote (Einsteiger/Pro/Retainer).",
+      contactText: "Hallo, ich bin ___ und möchte nebenbei mit einem Service starten.\n\nIch kann gut: ___\nIch will verkaufen: ___\nIch brauche Hilfe bei: Angebot/Preis/Grenze\n\nDanke!"
     },
 
     ugc: {
       id: "ugc",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "UGC für Marken",
       sub: "Du brauchst keine Reichweite. Du brauchst ein sauberes Ergebnis.",
-      what:
-        "Du lieferst Kurzvideos/Fotos/Ads-Material, das Marken als Werbung nutzen können.",
-      forWhom: [
-        "Wenn du schnell starten willst.",
-        "Wenn du lieber Output lieferst als Follower jagst.",
-        "Wenn du klare Pakete verkaufen willst."
-      ],
-      steps: [
-        "Wähle 1 Branche (Beauty, Fitness, Food, Tech).",
-        "Baue 6 Beispiel-Clips (Dummy reicht, eigenes Produkt reicht).",
-        "Schreibe 1 Angebotspaket (3 Stufen).",
-        "Pitch 20 Marken/Woche."
-      ],
-      money: [
-        { left: "Einstieg", right: "150–600 € pro Paket" },
-        { left: "4 Pakete/Monat", right: "600–2.400 €" },
-        { left: "10 Pakete/Monat", right: "1.500–6.000 €" }
-      ],
-      mistake: "Kein Fokus + kein Paket = endlose Anfragen ohne Abschluss.",
-      cta:
-        "Sag mir deine Branche – ich baue dir 3 UGC-Pakete inkl. Leistung, Preis, Grenzen und Pitch-Text.",
-      contactText:
-        "Hallo, ich bin ___ und überlege mit UGC zu starten. Branche: ___. Ich würde gern mehr erfahren und brauche Hilfe bei Paketen + Pitch."
+      what: "Du lieferst Foto/Video-Material, das Marken als Werbung nutzen. Ergebnis > Follower.",
+      forWhom: ["Wenn du schnell starten willst.","Wenn du lieber Output lieferst als Follower jagst.","Wenn du klare Pakete verkaufen willst."],
+      steps: ["1 Branche wählen.","6 Beispiel-Clips bauen.","3 Pakete definieren.","20 Marken/Woche pitchen."],
+      money: [{ left: "Einstieg", right: "150–600 € pro Paket" },{ left: "4 Pakete/Monat", right: "600–2.400 €" },{ left: "10 Pakete/Monat", right: "1.500–6.000 €" }],
+      mistake: "Kein Fokus + kein Paket = endlose Anfragen.",
+      cta: "Sag mir deine Branche – ich baue dir 3 UGC-Pakete inkl. Grenzen + Pitch-Text.",
+      contactText: "Hallo, ich bin ___ und will mit UGC starten.\n\nBranche: ___\nIch brauche Hilfe bei: Paketen/Pitch/Portfolio\n\nDanke!"
     },
 
     micro_services: {
       id: "micro_services",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "Micro-Dienstleistungen",
       sub: "Kleine Leistung · klare Grenze · schneller Verkauf",
-      what:
-        "Micro-Services sind kleine, abgeschlossene Ergebnisse, die du nebenbei liefern kannst – ohne auszuufern.",
-      forWhom: [
-        "Wenn du klare Sprints magst (48h / 7 Tage).",
-        "Wenn du schnell Proof willst.",
-        "Wenn du ohne Website starten willst."
-      ],
-      steps: [
-        "Definiere 1 Ergebnis (nicht 10 Aufgaben).",
-        "Setze Lieferzeit + Preis (und einen Aufpreis für Express).",
-        "Mach 1 Beispielfall (Vorher/Nachher).",
-        "Poste 3× pro Woche: Problem → Lösung → Angebot."
-      ],
-      money: [
-        { left: "Preis", right: "99–399 € pro Micro-Service" },
-        { left: "10 Verkäufe/Monat", right: "990–3.990 €" },
-        { left: "25 Verkäufe/Monat", right: "2.475–9.975 €" }
-      ],
-      mistake: "Zu billig, zu offen, zu viele Sonderwünsche.",
-      cta:
-        "Sag mir, was du gut kannst (Text, Foto, Struktur). Ich mache dir 10 Micro-Services inkl. Preisschild + Grenzen.",
-      contactText:
-        "Hallo, ich bin ___ und möchte einen Micro-Service anbieten. Ich kann gut: ___. Ich brauche Hilfe bei Angebot, Preis und klarer Grenze."
+      what: "Micro-Services liefern ein klares Ergebnis in kurzer Zeit – ohne auszuufern.",
+      forWhom: ["Wenn du klare Sprints magst.","Wenn du schnell Proof willst.","Wenn du ohne großes Setup starten willst."],
+      steps: ["1 Ergebnis definieren.","Preis + Lieferzeit + Express festlegen.","1 Beispielfall bauen.","Regelmäßig posten: Problem → Lösung → Angebot."],
+      money: [{ left: "Preis", right: "99–399 € pro Micro-Service" },{ left: "10 Verkäufe/Monat", right: "990–3.990 €" },{ left: "25 Verkäufe/Monat", right: "2.475–9.975 €" }],
+      mistake: "Zu offen, zu viele Sonderwünsche.",
+      cta: "Sag mir deine Stärke – ich mache dir 10 Micro-Services inkl. Preisschild + Grenzen.",
+      contactText: "Hallo, ich bin ___ und möchte Micro-Services anbieten.\n\nStärke: ___\nIch will verkaufen: ___\nIch brauche Hilfe bei: Angebot/Preis/Grenze\n\nDanke!"
     },
 
     platform: {
       id: "platform",
-      type: "Ast",
+      type: "AST",
       title: "Plattform-Einkommen",
       sub: "Reichweite als Motor · Funnels als Getriebe",
-      what:
-        "Plattformen zahlen nicht, weil du postest. Sie zahlen, wenn du postest und dein Funnel die Arbeit übernimmt.",
-      forWhom: [
-        "Wenn du Sichtbarkeit als Asset aufbauen willst.",
-        "Wenn du Systeme liebst (Hooks → CTA → Landingpage).",
-        "Wenn du nicht jeden Monat bei null starten willst."
-      ],
-      steps: [
-        "Wähle 1 Plattform (Pinterest oder Instagram) – nicht beide gleichzeitig.",
-        "Wähle 1 Angebot/Produkt als Ziel.",
-        "Baue eine Landingpage, die abschließt.",
-        "Baue Content als Maschine (wiederholbare Formate)."
-      ],
-      money: [
-        { left: "Richtwert", right: "500–20.000 €/Monat (je nach Angebot + System)" },
-        { left: "Tempo", right: "Pinterest: langsam · Instagram: schneller" }
-      ],
-      mistake: "Zu viel Ästhetik, zu wenig Angebot. Ohne CTA bleibt’s Theater.",
-      cta:
-        "Willst du eine Funnel-Struktur passend zu deinem Produkt (Hook-Formate + CTA-Flow + Landingpage-Outline)?",
-      contactText:
-        "Hallo, ich bin ___ und möchte Plattform-Einkommen als System aufbauen. Ich schwanke zwischen Pinterest/Instagram. Thema: ___."
+      what: "Plattformen zahlen nicht fürs Posten. Sie zahlen, wenn dein Funnel abschließt.",
+      forWhom: ["Wenn du Sichtbarkeit als Asset willst.","Wenn du Systeme magst (Hook → CTA → Landingpage)."],
+      steps: ["1 Plattform wählen.","1 Angebot als Ziel.","Landingpage bauen.","Wiederholbare Content-Formate."],
+      money: [{ left: "Richtwert", right: "500–20.000 €/Monat (je nach Angebot + System)" },{ left: "Tempo", right: "Pinterest: langsam · Instagram: schneller" }],
+      mistake: "Ohne Angebot ist alles Theater.",
+      cta: "Sag mir dein Produkt – ich mache dir Funnel-Outline + Content-Formate + CTA-Flow.",
+      contactText: "Hallo, ich bin ___ und möchte Plattform-Einkommen aufbauen.\n\nThema/Produkt: ___\nPlattform: Pinterest/Instagram\nIch brauche Hilfe bei: Funnel/Content/CTA\n\nDanke!"
     },
 
     pinterest: {
       id: "pinterest",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "Pinterest Evergreen",
       sub: "Langsam anlaufend. Dafür monatelang Geld mit einem Pin.",
-      what:
-        "Pins bringen Suchtraffic auf Landingpages. Dort steht ein Mini-Produkt oder Lead-Magnet, der verkauft oder Leads einsammelt.",
-      forWhom: [
-        "Wenn du geduldig bist (2–4 Monate Aufbau).",
-        "Wenn du Evergreen willst statt täglichem Druck.",
-        "Wenn du Suchintention nutzen willst."
-      ],
-      steps: [
-        "1 Thema = 1 Landingpage.",
-        "10 Pins pro Landingpage.",
-        "3 Boards, sauber benannt.",
-        "Jede Woche 10 neue Pins."
-      ],
-      money: [
-        { left: "Nach 2–4 Monaten", right: "500–3.000 €/Monat (bei Konsequenz)" },
-        { left: "Später möglich", right: "3.000–15.000 €/Monat (mit Produkt-Stack)" }
-      ],
-      mistake: "Zu früh aufgeben. Pinterest ist kein TikTok.",
-      cta:
-        "Sag mir dein Thema – ich baue dir 10 Board-Namen + 30 Pin-Titel + 1 Landingpage-Outline.",
-      contactText:
-        "Hallo, ich bin ___ und würde gern mehr über Pinterest Evergreen erfahren. Thema: ___. Ziel: ___. Ich brauche Hilfe bei Boards/Pins/Landingpage."
+      what: "Pins bringen Suchtraffic auf Landingpages. Dort verkauft dein Mini-Produkt (oder sammelt Leads).",
+      forWhom: ["Wenn du geduldig bist (2–4 Monate Aufbau).","Wenn du Evergreen willst statt Dauer-Druck."],
+      steps: ["1 Thema = 1 Landingpage.","10 Pins pro Landingpage.","3 Boards sauber benennen.","Jede Woche 10 neue Pins."],
+      money: [{ left: "Nach 2–4 Monaten", right: "500–3.000 €/Monat (bei Konsequenz)" },{ left: "Später möglich", right: "3.000–15.000 €/Monat (mit Produkt-Stack)" }],
+      mistake: "Zu früh aufgeben.",
+      cta: "Sag mir dein Thema – ich baue dir Boards + Pin-Titel + Landingpage-Outline.",
+      contactText: "Hallo, ich bin ___ und will Pinterest Evergreen starten.\n\nThema: ___\nZiel: ___\nIch brauche Hilfe bei: Boards/Pins/Landingpage\n\nDanke!"
     },
 
     instagram: {
       id: "instagram",
-      type: "Zweig",
+      type: "ZWEIG",
       title: "Instagram Funnel",
       sub: "Nicht posten. Leiten. Führen. Abschließen.",
-      what:
-        "Hook-Post → Story → DM/Link → Landingpage → Kauf. Nicht hübsch sein. Wirksam sein.",
-      forWhom: [
-        "Wenn du schnellere Reaktionen willst.",
-        "Wenn du mit Story/DM arbeiten kannst.",
-        "Wenn du ein klares Angebot hast (oder bereit bist, es zu bauen)."
-      ],
-      steps: [
-        "1 Produkt/1 Angebot wählen.",
-        "7 Content-Formate definieren (Problem, Proof, Prozess, Persönlichkeit, Preis, FAQ, Callout).",
-        "3 Posts/Woche + kurze Stories täglich.",
-        "Jede Woche 1 CTA-Post: „Schreib mir X“."
-      ],
-      money: [
-        { left: "Stabil", right: "1.000–5.000 €/Monat (bei sauberer Umsetzung)" },
-        { left: "Wenn System sitzt", right: "5.000–20.000 €/Monat (Angebot + Proof + Funnel)" }
-      ],
-      mistake: "Zu viel Content ohne Abschluss. Ohne CTA keine Verkäufe.",
-      cta:
-        "Sag mir dein Produkt – ich schreibe dir 14 Hooks + 14 Story-Skripte + 4 CTA-Posts.",
-      contactText:
-        "Hallo, ich bin ___ und möchte einen Instagram-Funnel aufbauen. Thema/Produkt: ___. Ich brauche Hilfe bei Hooks/Stories/CTA + Landingpage."
+      what: "Hook-Post → Story → Link/DM → Landingpage → Kauf. Nicht hübsch sein. Wirksam sein.",
+      forWhom: ["Wenn du schnellere Reaktionen willst.","Wenn du Story/DM nutzen kannst."],
+      steps: ["1 Produkt wählen.","7 Content-Formate definieren.","3 Posts/Woche + Stories.","1 CTA-Post/Woche."],
+      money: [{ left: "Stabil", right: "1.000–5.000 €/Monat (sauber umgesetzt)" },{ left: "Wenn System sitzt", right: "5.000–20.000 €/Monat (Offer + Proof + Funnel)" }],
+      mistake: "Zu viel Content ohne Abschluss.",
+      cta: "Sag mir dein Produkt – ich schreibe dir Hooks + Story-Skripte + CTA-Posts.",
+      contactText: "Hallo, ich bin ___ und möchte einen Instagram-Funnel bauen.\n\nThema/Produkt: ___\nIch brauche Hilfe bei: Hooks/Stories/CTA/Landingpage\n\nDanke!"
     }
   };
 
-  // ===== Rules (scoring) =====
+  // ===== rules/scoring =====
   const RULES = {
-    // branches
-    digital: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
-    services: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
-    platform: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    digital: { time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    services:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    platform:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
 
-    // twigs
-    mini_guides: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
-    templates: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    mini_guides:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    templates:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
 
-    ugc: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
-    micro_services: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    ugc:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    micro_services:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
 
-    pinterest: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
-    instagram: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    pinterest:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    instagram:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
 
-    hub: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] }
+    hub:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] }
   };
-
   const WEIGHTS = { time: 4, capital: 2, reach: 2, skill: 2 };
 
-  // ===== Elements =====
+  // ===== elements =====
   const els = {
     time: $("#timePerWeek"),
     capital: $("#capital"),
@@ -351,33 +260,54 @@
     pillReach: $("#pillReach"),
     pillSkill: $("#pillSkill"),
 
-    copyBtn: $("#copyBtn"),
+    emailBtn: $("#emailBtn"),
+    waBtn: $("#waBtn"),
     nextBtn: $("#nextBtn"),
 
-    footerMail: $("#footerMail")
+    footerMail: $("#footerMail"),
+    footerWa: $("#footerWa"),
+
+    statsPanel: $("#statsPanel"),
+    statsBox: $("#statsBox"),
+    statsResetBtn: $("#statsResetBtn"),
+    statsExportBtn: $("#statsExportBtn")
   };
 
-  const EMAIL_TO = "rebelle.media.creator@gmail.com";
   let lastOpenedId = "hub";
 
-  // ===== Safety: Modal darf NIE offen starten =====
+  // ===== safety: modal never open at start =====
   document.addEventListener("DOMContentLoaded", () => {
     const modalEl = document.getElementById("modalOverlay");
     if (modalEl) {
       modalEl.hidden = true;
       document.body.style.overflow = "";
     }
-    // Footer Mail: Default
-    setFooterMail(NODES.hub);
+
+    Analytics.inc("views");
+    updateUI();
+    setFooterLinks(NODES.hub);
+
+    // Stats panel only on demand
+    if (location.hash === "#stats") {
+      showStats();
+    }
   });
 
-  // ===== State =====
   function getState() {
     return {
       time: els.time?.value || "2-5",
       capital: els.capital?.value || "0",
       reach: els.reach?.value || "none",
       skill: els.skill?.value || "beginner"
+    };
+  }
+
+  function prettyState(s) {
+    return {
+      time: s.time === "2-5" ? "2–5h" : s.time === "5-10" ? "5–10h" : "10+h",
+      capital: s.capital === "0" ? "0€" : s.capital === "100-1000" ? "100–1.000€" : "1.000€+",
+      reach: s.reach === "none" ? "keine" : s.reach === "small" ? "klein" : "vorhanden",
+      skill: s.skill === "beginner" ? "Anfänger" : s.skill === "advanced" ? "Fortgeschritten" : "Profi"
     };
   }
 
@@ -389,11 +319,9 @@
     updateUI();
   }
 
-  // ===== Scoring =====
   function scoreNode(nodeId, state) {
     const rule = RULES[nodeId] || RULES.hub;
-    let score = 0;
-    let max = 0;
+    let score = 0, max = 0;
 
     const add = (key, val) => {
       const w = WEIGHTS[key];
@@ -406,18 +334,12 @@
     add("reach", state.reach);
     add("skill", state.skill);
 
-    const pct = Math.round((score / Math.max(1, max)) * 100);
+    let pct = Math.round((score / Math.max(1, max)) * 100);
 
-    // Heuristics (klein, aber spürbar)
-    if (state.time === "2-5" && (nodeId === "pinterest" || nodeId === "instagram" || nodeId === "platform")) {
-      return Math.max(0, pct - 15);
-    }
-    if (state.time === "2-5" && nodeId === "templates") {
-      return Math.max(0, pct - 10);
-    }
-    if (state.reach === "none" && nodeId === "instagram") {
-      return Math.max(0, pct - 10);
-    }
+    if (state.time === "2-5" && (nodeId === "pinterest" || nodeId === "instagram" || nodeId === "platform")) pct = Math.max(0, pct - 15);
+    if (state.time === "2-5" && nodeId === "templates") pct = Math.max(0, pct - 10);
+    if (state.reach === "none" && nodeId === "instagram") pct = Math.max(0, pct - 10);
+
     return pct;
   }
 
@@ -453,9 +375,8 @@
 
     $$("[data-score]").forEach((pill) => {
       const id = pill.getAttribute("data-score");
-      const pct = scoreNode(id, state);
+      const pct = scoreNode(id, getState());
       pill.textContent = scoreLabel(pct);
-      pill.dataset.pct = String(pct);
     });
 
     renderBest(state);
@@ -482,10 +403,7 @@
 
       card.addEventListener("click", () => openModal(item.id));
       card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openModal(item.id);
-        }
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(item.id); }
       });
 
       card.innerHTML = `
@@ -499,10 +417,8 @@
     });
   }
 
-  // ===== Modal =====
   function buildModalContent(node) {
     const makeList = (arr) => `<ul>${(arr || []).map((li) => `<li>${escapeHtml(li)}</li>`).join("")}</ul>`;
-
     const moneyRows = (node.money || [])
       .map((r) => `<div class="moneyRow"><span>${escapeHtml(r.left)}</span><strong>${escapeHtml(r.right)}</strong></div>`)
       .join("");
@@ -525,7 +441,7 @@
       </div>
 
       <div class="grid2">
-        <div class="section moneyBox">
+        <div class="section">
           <h4>Mögliche Gewinne</h4>
           ${moneyRows || `<p>Richtwerte – abhängig von Umsetzung, Angebot und Markt.</p>`}
         </div>
@@ -533,30 +449,52 @@
           <h4>Häufigster Fehler</h4>
           <p>${escapeHtml(node.mistake || "")}</p>
           <div style="height:10px"></div>
-          <h4>CTA</h4>
+          <h4>Nächster Schritt</h4>
           <p>${escapeHtml(node.cta || "")}</p>
         </div>
       </div>
     `;
   }
 
+  function buildMessage(node) {
+    const s = prettyState(getState());
+    return [
+      node.contactText || "Hallo, ich bin ___ und würde gern mehr erfahren.",
+      "",
+      "— Kontext (Vermögensbaum) —",
+      `Zweig: ${node.title}`,
+      node.sub ? `Subline: ${node.sub}` : "",
+      "",
+      "— Mein Stamm —",
+      `Zeit/Woche: ${s.time}`,
+      `Kapital: ${s.capital}`,
+      `Reichweite: ${s.reach}`,
+      `Skill: ${s.skill}`,
+      "",
+      "— Meine Frage / mein Ziel —",
+      "Ich will konkret erreichen: ___",
+      "Ich brauche Hilfe bei: ___"
+    ].filter(Boolean).join("\n");
+  }
+
   function openModal(nodeId) {
     const node = NODES[nodeId] || NODES.hub;
     lastOpenedId = nodeId;
 
-    if (els.modalKicker) els.modalKicker.textContent = node.type || "Zweig";
+    Analytics.inc("opens", nodeId);
+
+    if (els.modalKicker) els.modalKicker.textContent = node.type || "ZWEIG";
     if (els.modalTitle) els.modalTitle.textContent = node.title || "";
     if (els.modalSub) els.modalSub.textContent = node.sub || "";
     if (els.modalBody) els.modalBody.innerHTML = buildModalContent(node);
 
-    const state = getState();
-    if (els.pillTime) els.pillTime.textContent = `Zeit: ${pretty.time(state.time)}`;
-    if (els.pillCapital) els.pillCapital.textContent = `Kapital: ${pretty.capital(state.capital)}`;
-    if (els.pillReach) els.pillReach.textContent = `Reichweite: ${pretty.reach(state.reach)}`;
-    if (els.pillSkill) els.pillSkill.textContent = `Skill: ${pretty.skill(state.skill)}`;
+    const s = prettyState(getState());
+    if (els.pillTime) els.pillTime.textContent = `Zeit: ${s.time}`;
+    if (els.pillCapital) els.pillCapital.textContent = `Kapital: ${s.capital}`;
+    if (els.pillReach) els.pillReach.textContent = `Reichweite: ${s.reach}`;
+    if (els.pillSkill) els.pillSkill.textContent = `Skill: ${s.skill}`;
 
-    // Footer-Mail immer passend zum aktuell geöffneten Zweig
-    setFooterMail(node);
+    setFooterLinks(node);
 
     if (els.modalOverlay) {
       els.modalOverlay.hidden = false;
@@ -569,9 +507,15 @@
     if (!els.modalOverlay) return;
     els.modalOverlay.hidden = true;
     document.body.style.overflow = "";
+  }
 
-    const back = $(`[data-node="${lastOpenedId}"]`);
-    if (back) back.focus();
+  function openBestModal() {
+    const state = getState();
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    const best = candidateIds
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct)[0];
+    openModal(best.id);
   }
 
   function openNextBest() {
@@ -586,104 +530,57 @@
     openModal(next.id);
   }
 
-  function openBest3Modal() {
-    const state = getState();
-    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
-    const best = candidateIds
-      .map((id) => ({ id, pct: scoreNode(id, state) }))
-      .sort((a, b) => b.pct - a.pct)[0];
-    openModal(best.id);
-  }
-
   function openRandomTwig() {
     const twigs = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
-    const pick = twigs[Math.floor(Math.random() * twigs.length)];
-    openModal(pick);
+    openModal(twigs[Math.floor(Math.random() * twigs.length)]);
   }
 
-  // ===== Footer Mail (zweigbezogen) =====
-  function setFooterMail(node) {
-    if (!els.footerMail) return;
-
-    const subject = encodeURIComponent("Frage zum Vermögensbaum");
-    const body = encodeURIComponent(
-      node?.contactText ||
-        "Hallo, ich bin ___ und würde gern mehr erfahren. Ich stehe gerade hier: ___."
-    );
-
-    els.footerMail.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
-    els.footerMail.textContent = EMAIL_TO;
+  function sendMail(node) {
+    Analytics.inc("mails", node.id);
+    const subject = encodeURIComponent(`Vermögensbaum – ${node.title}`);
+    const body = encodeURIComponent(buildMessage(node));
+    window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
   }
 
-  // ===== Copy =====
-  function copyModalText() {
-    const node = NODES[lastOpenedId] || NODES.hub;
-    const state = getState();
-
-    const text = [
-      `Vermögensbaum – ${node.type}: ${node.title}`,
-      node.sub ? `\n${node.sub}\n` : "\n",
-      `Was ist das?\n${node.what}\n`,
-      `Für wen passt das?\n- ${(node.forWhom || []).join("\n- ")}\n`,
-      `So startest du\n- ${(node.steps || []).join("\n- ")}\n`,
-      `Mögliche Gewinne\n- ${(node.money || []).map((m) => `${m.left}: ${m.right}`).join("\n- ")}\n`,
-      `Häufigster Fehler\n${node.mistake}\n`,
-      `CTA\n${node.cta}\n`,
-      `Kontakttext (E-Mail)\n${node.contactText || ""}\n`,
-      `\nDein Stamm: Zeit=${pretty.time(state.time)} | Kapital=${pretty.capital(state.capital)} | Reichweite=${pretty.reach(state.reach)} | Skill=${pretty.skill(state.skill)}`
-    ].join("\n");
-
-    navigator.clipboard?.writeText(text).then(
-      () => toast("Kopiert."),
-      () => {
-        fallbackCopy(text);
-        toast("Kopiert.");
-      }
-    );
+  function openWhatsApp(node) {
+    Analytics.inc("whatsapps", node.id);
+    const text = encodeURIComponent(buildMessage(node));
+    // wa.me needs international number without +
+    return `https://wa.me/${WA_NUMBER}?text=${text}`;
   }
 
-  function fallbackCopy(text) {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.left = "-9999px";
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand("copy");
-    } catch (_) {}
-    document.body.removeChild(ta);
+  function setFooterLinks(node) {
+    if (els.footerMail) {
+      const subject = encodeURIComponent(`Vermögensbaum – ${node.title}`);
+      const body = encodeURIComponent(buildMessage(node));
+      els.footerMail.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+      els.footerMail.textContent = EMAIL_TO;
+    }
+    if (els.footerWa) {
+      els.footerWa.href = openWhatsApp(node);
+    }
   }
 
-  function toast(msg) {
-    const t = document.createElement("div");
-    t.textContent = msg;
-    t.style.position = "fixed";
-    t.style.bottom = "18px";
-    t.style.left = "50%";
-    t.style.transform = "translateX(-50%)";
-    t.style.padding = "10px 12px";
-    t.style.borderRadius = "14px";
-    t.style.background = "rgba(196,255,213,.92)";
-    t.style.color = "#06110f";
-    t.style.fontWeight = "900";
-    t.style.border = "1px solid rgba(0,0,0,.12)";
-    t.style.boxShadow = "0 18px 40px rgba(0,0,0,.45)";
-    t.style.zIndex = "999";
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 1200);
+  // 🅲 Stats UI
+  function showStats() {
+    if (!els.statsPanel || !els.statsBox) return;
+    els.statsPanel.hidden = false;
+    const d = Analytics.get();
+    els.statsBox.textContent = JSON.stringify(d, null, 2);
   }
 
-  // ===== UI wiring =====
+  function refreshStats() {
+    if (!els.statsBox) return;
+    els.statsBox.textContent = JSON.stringify(Analytics.get(), null, 2);
+  }
+
+  // ===== wiring =====
   function bindNodeClicks() {
     $$("[data-node]").forEach((el) => {
       const id = el.getAttribute("data-node");
       el.addEventListener("click", () => openModal(id));
       el.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openModal(id);
-        }
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(id); }
       });
     });
   }
@@ -695,7 +592,7 @@
     });
 
     els.reset?.addEventListener("click", resetState);
-    els.openBest?.addEventListener("click", openBest3Modal);
+    els.openBest?.addEventListener("click", openBestModal);
     els.openHub?.addEventListener("click", () => openModal("hub"));
     els.openRandom?.addEventListener("click", openRandomTwig);
 
@@ -706,17 +603,35 @@
 
     document.addEventListener("keydown", (e) => {
       if (els.modalOverlay && !els.modalOverlay.hidden && e.key === "Escape") closeModal();
+      if (location.hash === "#stats") showStats();
     });
 
-    els.copyBtn?.addEventListener("click", copyModalText);
+    els.emailBtn?.addEventListener("click", () => {
+      const node = NODES[lastOpenedId] || NODES.hub;
+      sendMail(node);
+      refreshStats();
+    });
+
+    els.waBtn?.addEventListener("click", () => {
+      const node = NODES[lastOpenedId] || NODES.hub;
+      window.open(openWhatsApp(node), "_blank");
+      refreshStats();
+    });
+
     els.nextBtn?.addEventListener("click", openNextBest);
+
+    els.statsResetBtn?.addEventListener("click", () => {
+      Analytics.reset();
+      refreshStats();
+    });
+
+    els.statsExportBtn?.addEventListener("click", () => {
+      Analytics.exportJSON();
+    });
   }
 
-  function updateUI() {
-    updateScores();
-  }
+  function updateUI() { updateScores(); }
 
-  // ===== Utils =====
   function escapeHtml(str) {
     return String(str)
       .replaceAll("&", "&amp;")
@@ -726,19 +641,10 @@
       .replaceAll("'", "&#039;");
   }
 
-  const pretty = {
-    time: (v) => (v === "2-5" ? "2–5h" : v === "5-10" ? "5–10h" : "10+h"),
-    capital: (v) => (v === "0" ? "0€" : v === "100-1000" ? "100–1.000€" : "1.000€+"),
-    reach: (v) => (v === "none" ? "keine" : v === "small" ? "klein" : "vorhanden"),
-    skill: (v) => (v === "beginner" ? "Anfänger" : v === "advanced" ? "Fortgeschritten" : "Profi")
-  };
-
-  // ===== Init =====
   function init() {
     bindNodeClicks();
     bindControls();
     updateUI();
-    // Footer default schon gesetzt im DOMContentLoaded
   }
 
   init();
