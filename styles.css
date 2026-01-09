@@ -1,3 +1,7 @@
+[hidden] {
+  display: none !important;
+}
+
 :root{
   /* ===== Palette ===== */
   --p1: #20675e;   /* deep */

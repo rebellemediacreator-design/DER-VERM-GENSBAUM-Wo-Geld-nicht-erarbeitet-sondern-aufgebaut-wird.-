@@ -666,6 +666,12 @@
     updateUI();
     // initial best cards ready
   }
+// SAFETY RESET: Modal darf nie offen starten
+const modalEl = document.getElementById("modalOverlay");
+if (modalEl) {
+  modalEl.hidden = true;
+  document.body.style.overflow = "";
+}
 
   init();
 
