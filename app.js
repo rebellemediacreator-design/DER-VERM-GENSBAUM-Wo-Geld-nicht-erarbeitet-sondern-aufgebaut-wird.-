@@ -649,3 +649,123 @@
 
   init();
 })();
+// ===== Share Links (E-Mail + WhatsApp) – robust & smartphone-tauglich =====
+(function () {
+  const modalOverlay = document.getElementById("modalOverlay");
+  const emailLink = document.getElementById("emailBtn");
+  const waLink = document.getElementById("waBtn");
+  const footerWa = document.getElementById("footerWa");
+
+  const elTitle = document.getElementById("modalTitle");
+  const elSub = document.getElementById("modalSub");
+  const elBody = document.getElementById("modalBody");
+
+  const selTime = document.getElementById("timePerWeek");
+  const selCapital = document.getElementById("capital");
+  const selReach = document.getElementById("reach");
+  const selSkill = document.getElementById("skill");
+
+  if (!emailLink || !waLink || !modalOverlay) return;
+
+  function textOf(node) {
+    if (!node) return "";
+    // ModalBody kann HTML enthalten – wir holen lesbaren Text
+    return (node.innerText || node.textContent || "").trim();
+  }
+
+  function buildContextBlock() {
+    const t = selTime ? selTime.options[selTime.selectedIndex].text : "—";
+    const c = selCapital ? selCapital.options[selCapital.selectedIndex].text : "—";
+    const r = selReach ? selReach.options[selReach.selectedIndex].text : "—";
+    const s = selSkill ? selSkill.options[selSkill.selectedIndex].text : "—";
+
+    return [
+      `Stamm: Zeit ${t} · Kapital ${c} · Reichweite ${r} · Skill ${s}`,
+      `Link: ${window.location.href}`
+    ].join("\r\n");
+  }
+
+  function buildMailto() {
+    const title = textOf(elTitle) || "Vermögensbaum – Zweig";
+    const sub = textOf(elSub);
+    const bodyText = textOf(elBody);
+
+    const subject = `Vermögensbaum: ${title}`;
+    const lines = [
+      "Hi,",
+      "",
+      "ich leite dir das hier weiter:",
+      "",
+      `Zweig: ${title}`,
+      sub ? `Kurz: ${sub}` : "",
+      "",
+      bodyText ? bodyText : "",
+      "",
+      buildContextBlock(),
+      "",
+      "—",
+      "🖤 RE:BELLE™ Media",
+      "The Art of Feeling. Amplified.",
+      "newwomanintheshop.com"
+    ].filter(Boolean);
+
+    const body = lines.join("\r\n");
+
+    // Empfänger leer lassen = Nutzer wählt selbst
+    return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  function buildWhatsApp() {
+    const title = textOf(elTitle) || "Vermögensbaum – Zweig";
+    const sub = textOf(elSub);
+    const bodyText = textOf(elBody);
+
+    const msgLines = [
+      `Vermögensbaum – ${title}`,
+      sub ? sub : "",
+      "",
+      bodyText ? bodyText : "",
+      "",
+      buildContextBlock(),
+      "",
+      "🖤 RE:BELLE™ Media"
+    ].filter(Boolean);
+
+    const msg = msgLines.join("\n");
+    return `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  }
+
+  function updateShareLinks() {
+    // Nur updaten, wenn Modal sichtbar ist (oder wenn Footer-WA gesetzt werden soll)
+    emailLink.setAttribute("href", buildMailto());
+    waLink.setAttribute("href", buildWhatsApp());
+
+    if (footerWa) {
+      const footerMsg = [
+        "Hi, ich habe eine Frage zu 🖤 RE:BELLE™ Media.",
+        "Link: " + window.location.href
+      ].join("\n");
+      footerWa.setAttribute("href", `https://wa.me/?text=${encodeURIComponent(footerMsg)}`);
+    }
+  }
+
+  // 1) Beim Öffnen/Schließen des Modals (hidden toggles) automatisch aktualisieren
+  const obs = new MutationObserver(() => {
+    if (!modalOverlay.hasAttribute("hidden")) updateShareLinks();
+  });
+  obs.observe(modalOverlay, { attributes: true, attributeFilter: ["hidden"] });
+
+  // 2) Sicherheit: direkt beim Klick (muss synchron sein)
+  emailLink.addEventListener("click", () => {
+    emailLink.setAttribute("href", buildMailto());
+    // KEIN preventDefault, KEIN async – Browser soll nativ öffnen
+  });
+
+  waLink.addEventListener("click", () => {
+    waLink.setAttribute("href", buildWhatsApp());
+  });
+
+  // 3) Falls Modal schon offen ist beim Laden
+  if (!modalOverlay.hasAttribute("hidden")) updateShareLinks();
+})();
+

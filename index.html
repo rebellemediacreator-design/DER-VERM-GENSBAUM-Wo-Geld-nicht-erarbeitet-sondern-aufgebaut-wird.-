@@ -19,7 +19,6 @@
         </div>
       </div>
 
-      <!-- 🅱️ Mini-Onboarding -->
       <section class="onboarding" aria-label="So nutzt du den Baum">
         <div class="onbTop">
           <div class="onbTitle">So nutzt du den Baum in 3 Minuten</div>
@@ -38,7 +37,6 @@
   <main class="main">
     <div class="wrap">
 
-      <!-- CONTROLS -->
       <section class="controls">
         <div class="controlsHeader">
           <h2>Dein Stamm</h2>
@@ -91,7 +89,6 @@
         </div>
       </section>
 
-      <!-- TREE -->
       <section class="treeShell">
         <div class="treeHeader">
           <div>
@@ -214,7 +211,6 @@
         </div>
       </section>
 
-      <!-- BEST -->
       <section class="bestList">
         <div class="bestHeader">
           <h2>Empfohlen für deinen Stamm</h2>
@@ -223,7 +219,6 @@
         <div class="bestCards" id="bestCards" role="list"></div>
       </section>
 
-      <!-- 🅲 Local Stats Panel (nur wenn #stats in URL) -->
       <section class="stats" id="statsPanel" hidden>
         <div class="statsHeader">
           <h2>Local Stats (nur auf diesem Gerät)</h2>
@@ -239,7 +234,6 @@
     </div>
   </main>
 
-  <!-- FOOTER (E-Mail + WhatsApp optional) -->
   <footer class="appFooter">
     <div class="footerInner">
       <p class="footerBrand">
@@ -257,7 +251,6 @@
     </div>
   </footer>
 
-  <!-- MODAL -->
   <div class="modalOverlay" id="modalOverlay" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
       <div class="modalTop">
@@ -280,8 +273,9 @@
         </div>
 
         <div class="modalActions">
-          <button class="btn primary" id="emailBtn" type="button">Per E-Mail senden</button>
-          <button class="btn" id="waBtn" type="button">Optional: WhatsApp</button>
+          <!-- WICHTIG: echte Links, nicht Button -->
+          <a class="btn primary" id="emailBtn" href="#" role="button" rel="noopener">Per E-Mail senden</a>
+          <a class="btn" id="waBtn" href="#" role="button" target="_blank" rel="noopener">Optional: WhatsApp</a>
           <button class="btn" id="nextBtn" type="button">Nächster passender</button>
         </div>
       </div>
