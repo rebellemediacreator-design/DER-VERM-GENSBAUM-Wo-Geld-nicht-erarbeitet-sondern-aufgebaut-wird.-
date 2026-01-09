@@ -1,17 +1,18 @@
 (() => {
   "use strict";
 
-  const $ = (sel, el=document) => el.querySelector(sel);
-  const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
 
-  // --- Content (no placeholders) ---
+  // ===== Content (inkl. kontaktText pro Zweig) =====
   const NODES = {
     hub: {
       id: "hub",
       type: "Hub",
       title: "Vermögensbaum",
       sub: "Überblick · Filter · Klick in die Zweige",
-      what: "Du brauchst keine 27 Ideen. Du brauchst eine Idee, die wächst. Dieser Baum zeigt dir Wege, die du nebenbei starten kannst – mit klaren Schritten und realistischen Gewinnspannen.",
+      what:
+        "Du brauchst keine 27 Ideen. Du brauchst eine Idee, die wächst. Dieser Baum zeigt dir Wege, die du nebenbei starten kannst – mit klaren Schritten und realistischen Gewinnspannen.",
       forWhom: [
         "Wenn du Struktur willst statt Chaos.",
         "Wenn du Optionen sehen willst, ohne dich zu verzetteln.",
@@ -27,8 +28,12 @@
         { left: "Ergebnis", right: "Klarheit + Fokus + Startplan" },
         { left: "Hebel", right: "Skalieren statt schuften" }
       ],
-      mistake: "Zu viele Optionen ohne Filter → Lähmung. Und: Zu viel Lesen ohne Tun.",
-      cta: "Wenn du willst, sag mir: Zeit/Woche + Startkapital + Reichweite. Dann mache ich dir aus dem Baum eine 7-Tage-Startsequenz."
+      mistake:
+        "Zu viele Optionen ohne Filter → Lähmung. Und: Zu viel Lesen ohne Tun.",
+      cta:
+        "Wenn du willst, sag mir: Zeit/Woche + Startkapital + Reichweite. Dann mache ich dir aus dem Baum eine 7-Tage-Startsequenz.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern mehr über den Vermögensbaum erfahren. Ich stehe gerade hier: ___."
     },
 
     digital: {
@@ -36,7 +41,8 @@
       type: "Ast",
       title: "Digitale Produkte",
       sub: "Einmal bauen · oft verkaufen",
-      what: "Du verkaufst kein PDF. Du verkaufst: Erleichterung, Abkürzung, Ordnung, Ergebnis.",
+      what:
+        "Du verkaufst kein PDF. Du verkaufst: Erleichterung, Abkürzung, Ordnung, Ergebnis.",
       forWhom: [
         "Wenn du erklären, strukturieren, vereinfachen kannst.",
         "Wenn du weniger Zeit-gegen-Geld willst.",
@@ -53,7 +59,10 @@
         { left: "Tempo", right: "mittel (dafür skalierbar)" }
       ],
       mistake: "Zu lang, zu allgemein, zu viel Wissen statt Schritte.",
-      cta: "Willst du 10 Produktideen aus deinen Themen – inkl. Titel, Struktur, Preis, und Verkaufsargument?"
+      cta:
+        "Willst du 10 Produktideen aus deinen Themen – inkl. Titel, Struktur, Preis, und Verkaufsargument?",
+      contactText:
+        "Hallo, ich bin ___ und würde gern wissen, welches digitale Produkt (Guide/Template) zu meinem Thema passt. Mein Thema: ___."
     },
 
     mini_guides: {
@@ -61,7 +70,8 @@
       type: "Zweig",
       title: "Mini-Guides / PDFs",
       sub: "Die schnellste Form, Wissen in Geld zu verwandeln",
-      what: "Ein Mini-Guide ist kein Buch. Er ist ein Werkzeug: kurz, konkret, umsetzbar.",
+      what:
+        "Ein Mini-Guide ist kein Buch. Er ist ein Werkzeug: kurz, konkret, umsetzbar.",
       forWhom: [
         "Wenig Zeit pro Woche.",
         "Wenig Startkapital.",
@@ -79,8 +89,12 @@
         { left: "2 Verkäufe/Tag", right: "ca. 540–1.740 €/Monat" },
         { left: "5 Verkäufe/Tag", right: "ca. 1.350–4.350 €/Monat" }
       ],
-      mistake: "Zu viel Theorie. Zu wenig Schritt-für-Schritt. Und: Kein klarer Kaufgrund (Zeit sparen / Fehler vermeiden / Ergebnis).",
-      cta: "Sag mir 1 Thema – ich mache dir daraus einen Mini-Guide: Titel, Inhaltsstruktur, Checkliste, Preis und Landingpage-Text."
+      mistake:
+        "Zu viel Theorie. Zu wenig Schritt-für-Schritt. Und: Kein klarer Kaufgrund (Zeit sparen / Fehler vermeiden / Ergebnis).",
+      cta:
+        "Sag mir 1 Thema – ich mache dir daraus einen Mini-Guide: Titel, Inhaltsstruktur, Checkliste, Preis und Landingpage-Text.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern mehr über Mini-Guides erfahren. Mein Thema ist: ___. Ich will damit starten, aber hänge bei: ___."
     },
 
     templates: {
@@ -88,7 +102,8 @@
       type: "Zweig",
       title: "Templates",
       sub: "Menschen zahlen dafür, nicht bei null anfangen zu müssen",
-      what: "Vorlagen, die Arbeit abnehmen: Content-Plan, Angebots-PDF, Kalender, Checklisten, Dashboards, Branding-Kits.",
+      what:
+        "Vorlagen, die Arbeit abnehmen: Content-Plan, Angebots-PDF, Kalender, Checklisten, Dashboards, Branding-Kits.",
       forWhom: [
         "Du kannst Systeme bauen.",
         "Du liebst klare Strukturen.",
@@ -106,7 +121,9 @@
         { left: "200 Verkäufe/Monat à 49 €", right: "9.800 €" }
       ],
       mistake: "Schön, aber ohne Nutzen. Template ohne Ergebnisversprechen = Deko.",
-      cta: "Willst du 10 Template-Ideen, die sich verkaufen + Bundle-Struktur + Shop-Texte?"
+      cta: "Willst du 10 Template-Ideen, die sich verkaufen + Bundle-Struktur + Shop-Texte?",
+      contactText:
+        "Hallo, ich bin ___ und würde gern wissen, welche Template-Idee zu meinem Thema passt. Mein Thema: ___. Ziel: ___."
     },
 
     services: {
@@ -114,7 +131,8 @@
       type: "Ast",
       title: "Services nebenbei",
       sub: "Schneller Cashflow · Marktfeedback · später skalieren",
-      what: "Services sind der Turbo. Nicht das Ziel. Du nutzt sie, um Geld + Marktfeedback zu bekommen – und daraus später Produkte zu bauen.",
+      what:
+        "Services sind der Turbo. Nicht das Ziel. Du nutzt sie, um Geld + Marktfeedback zu bekommen – und daraus später Produkte zu bauen.",
       forWhom: [
         "Wenn du schnell Umsatz brauchst.",
         "Wenn du Proof (Beispiele) aufbauen willst.",
@@ -131,7 +149,10 @@
         { left: "Tempo", right: "schnell (dafür weniger skalierbar)" }
       ],
       mistake: "„Ich kann alles“ → niemand kauft. Fokus schlägt Talent.",
-      cta: "Willst du 3 Service-Angebote, die sauber abgrenzen (Einsteiger/Pro/Retainer) – als Copy-Paste Text?"
+      cta:
+        "Willst du 3 Service-Angebote, die sauber abgrenzen (Einsteiger/Pro/Retainer) – als Copy-Paste Text?",
+      contactText:
+        "Hallo, ich bin ___ und möchte nebenbei mit einem klaren Service starten. Ich kann gut: ___. Ich brauche Hilfe bei Angebot + Preis + Grenze."
     },
 
     ugc: {
@@ -139,7 +160,8 @@
       type: "Zweig",
       title: "UGC für Marken",
       sub: "Du brauchst keine Reichweite. Du brauchst ein sauberes Ergebnis.",
-      what: "Du lieferst Kurzvideos/Fotos/Ads-Material, das Marken als Werbung nutzen können.",
+      what:
+        "Du lieferst Kurzvideos/Fotos/Ads-Material, das Marken als Werbung nutzen können.",
       forWhom: [
         "Wenn du schnell starten willst.",
         "Wenn du lieber Output lieferst als Follower jagst.",
@@ -157,7 +179,10 @@
         { left: "10 Pakete/Monat", right: "1.500–6.000 €" }
       ],
       mistake: "Kein Fokus + kein Paket = endlose Anfragen ohne Abschluss.",
-      cta: "Sag mir deine Branche – ich baue dir 3 UGC-Pakete inkl. Leistung, Preis, Grenzen und Pitch-Text."
+      cta:
+        "Sag mir deine Branche – ich baue dir 3 UGC-Pakete inkl. Leistung, Preis, Grenzen und Pitch-Text.",
+      contactText:
+        "Hallo, ich bin ___ und überlege mit UGC zu starten. Branche: ___. Ich würde gern mehr erfahren und brauche Hilfe bei Paketen + Pitch."
     },
 
     micro_services: {
@@ -165,7 +190,8 @@
       type: "Zweig",
       title: "Micro-Dienstleistungen",
       sub: "Kleine Leistung · klare Grenze · schneller Verkauf",
-      what: "Micro-Services sind keine Agentur. Es sind kleine, abgeschlossene Ergebnisse, die du nebenbei liefern kannst – ohne auszuufern.",
+      what:
+        "Micro-Services sind kleine, abgeschlossene Ergebnisse, die du nebenbei liefern kannst – ohne auszuufern.",
       forWhom: [
         "Wenn du klare Sprints magst (48h / 7 Tage).",
         "Wenn du schnell Proof willst.",
@@ -183,7 +209,10 @@
         { left: "25 Verkäufe/Monat", right: "2.475–9.975 €" }
       ],
       mistake: "Zu billig, zu offen, zu viele Sonderwünsche.",
-      cta: "Sag mir, was du gut kannst (Text, Foto, Struktur). Ich mache dir 10 Micro-Services inkl. Preisschild + Grenzen."
+      cta:
+        "Sag mir, was du gut kannst (Text, Foto, Struktur). Ich mache dir 10 Micro-Services inkl. Preisschild + Grenzen.",
+      contactText:
+        "Hallo, ich bin ___ und möchte einen Micro-Service anbieten. Ich kann gut: ___. Ich brauche Hilfe bei Angebot, Preis und klarer Grenze."
     },
 
     platform: {
@@ -191,7 +220,8 @@
       type: "Ast",
       title: "Plattform-Einkommen",
       sub: "Reichweite als Motor · Funnels als Getriebe",
-      what: "Plattformen zahlen nicht, weil du postest. Sie zahlen, wenn du postest und dein Funnel die Arbeit übernimmt.",
+      what:
+        "Plattformen zahlen nicht, weil du postest. Sie zahlen, wenn du postest und dein Funnel die Arbeit übernimmt.",
       forWhom: [
         "Wenn du Sichtbarkeit als Asset aufbauen willst.",
         "Wenn du Systeme liebst (Hooks → CTA → Landingpage).",
@@ -208,7 +238,10 @@
         { left: "Tempo", right: "Pinterest: langsam · Instagram: schneller" }
       ],
       mistake: "Zu viel Ästhetik, zu wenig Angebot. Ohne CTA bleibt’s Theater.",
-      cta: "Willst du eine Funnel-Struktur passend zu deinem Produkt (Hook-Formate + CTA-Flow + Landingpage-Outline)?"
+      cta:
+        "Willst du eine Funnel-Struktur passend zu deinem Produkt (Hook-Formate + CTA-Flow + Landingpage-Outline)?",
+      contactText:
+        "Hallo, ich bin ___ und möchte Plattform-Einkommen als System aufbauen. Ich schwanke zwischen Pinterest/Instagram. Thema: ___."
     },
 
     pinterest: {
@@ -216,7 +249,8 @@
       type: "Zweig",
       title: "Pinterest Evergreen",
       sub: "Langsam anlaufend. Dafür monatelang Geld mit einem Pin.",
-      what: "Pins bringen Suchtraffic auf Landingpages. Dort steht ein Mini-Produkt oder Lead-Magnet, der verkauft oder Leads einsammelt.",
+      what:
+        "Pins bringen Suchtraffic auf Landingpages. Dort steht ein Mini-Produkt oder Lead-Magnet, der verkauft oder Leads einsammelt.",
       forWhom: [
         "Wenn du geduldig bist (2–4 Monate Aufbau).",
         "Wenn du Evergreen willst statt täglichem Druck.",
@@ -233,7 +267,10 @@
         { left: "Später möglich", right: "3.000–15.000 €/Monat (mit Produkt-Stack)" }
       ],
       mistake: "Zu früh aufgeben. Pinterest ist kein TikTok.",
-      cta: "Sag mir dein Thema – ich baue dir 10 Board-Namen + 30 Pin-Titel + 1 Landingpage-Outline."
+      cta:
+        "Sag mir dein Thema – ich baue dir 10 Board-Namen + 30 Pin-Titel + 1 Landingpage-Outline.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern mehr über Pinterest Evergreen erfahren. Thema: ___. Ziel: ___. Ich brauche Hilfe bei Boards/Pins/Landingpage."
     },
 
     instagram: {
@@ -241,7 +278,8 @@
       type: "Zweig",
       title: "Instagram Funnel",
       sub: "Nicht posten. Leiten. Führen. Abschließen.",
-      what: "Hook-Post → Story → DM/Link → Landingpage → Kauf. Nicht hübsch sein. Wirksam sein.",
+      what:
+        "Hook-Post → Story → DM/Link → Landingpage → Kauf. Nicht hübsch sein. Wirksam sein.",
       forWhom: [
         "Wenn du schnellere Reaktionen willst.",
         "Wenn du mit Story/DM arbeiten kannst.",
@@ -258,45 +296,47 @@
         { left: "Wenn System sitzt", right: "5.000–20.000 €/Monat (Angebot + Proof + Funnel)" }
       ],
       mistake: "Zu viel Content ohne Abschluss. Ohne CTA keine Verkäufe.",
-      cta: "Sag mir dein Produkt – ich schreibe dir 14 Hooks + 14 Story-Skripte + 4 CTA-Posts."
+      cta:
+        "Sag mir dein Produkt – ich schreibe dir 14 Hooks + 14 Story-Skripte + 4 CTA-Posts.",
+      contactText:
+        "Hallo, ich bin ___ und möchte einen Instagram-Funnel aufbauen. Thema/Produkt: ___. Ich brauche Hilfe bei Hooks/Stories/CTA + Landingpage."
     }
   };
 
-  const ALL_NODE_IDS = Object.keys(NODES);
-
-  // Eligibility rules (simple but meaningful)
-  // Each node (esp. twigs) defines "ideal" conditions; scoring picks best.
+  // ===== Rules (scoring) =====
   const RULES = {
     // branches
-    digital: { time: ["2-5","5-10","10+"], capital: ["0","100-1000","1000+"], reach: ["none","small","existing"], skill: ["beginner","advanced","pro"] },
-    services:{ time: ["2-5","5-10","10+"], capital: ["0","100-1000","1000+"], reach: ["none","small","existing"], skill: ["beginner","advanced","pro"] },
-    platform:{ time: ["5-10","10+"], capital: ["0","100-1000","1000+"], reach: ["none","small","existing"], skill: ["beginner","advanced","pro"] },
+    digital: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    services: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    platform: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
 
     // twigs
-    mini_guides:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
-    templates:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["advanced","pro","beginner"] },
+    mini_guides: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    templates: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
 
-    ugc:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
-    micro_services:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    ugc: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    micro_services: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
 
-    pinterest:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
-    instagram:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["small","existing","none"], skill:["beginner","advanced","pro"] },
+    pinterest: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
+    instagram: { time: ["5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] },
 
-    hub:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] }
+    hub: { time: ["2-5", "5-10", "10+"], capital: ["0", "100-1000", "1000+"], reach: ["none", "small", "existing"], skill: ["beginner", "advanced", "pro"] }
   };
 
-  // scoring weights: time more important for platform & templates
   const WEIGHTS = { time: 4, capital: 2, reach: 2, skill: 2 };
 
+  // ===== Elements =====
   const els = {
     time: $("#timePerWeek"),
     capital: $("#capital"),
     reach: $("#reach"),
     skill: $("#skill"),
+
     reset: $("#resetBtn"),
     openBest: $("#openBestBtn"),
     openHub: $("#openHubBtn"),
     openRandom: $("#openRandomBtn"),
+
     bestCards: $("#bestCards"),
 
     modalOverlay: $("#modalOverlay"),
@@ -313,33 +353,48 @@
 
     copyBtn: $("#copyBtn"),
     nextBtn: $("#nextBtn"),
+
+    footerMail: $("#footerMail")
   };
 
+  const EMAIL_TO = "rebelle.media.creator@gmail.com";
   let lastOpenedId = "hub";
 
-  function getState(){
+  // ===== Safety: Modal darf NIE offen starten =====
+  document.addEventListener("DOMContentLoaded", () => {
+    const modalEl = document.getElementById("modalOverlay");
+    if (modalEl) {
+      modalEl.hidden = true;
+      document.body.style.overflow = "";
+    }
+    // Footer Mail: Default
+    setFooterMail(NODES.hub);
+  });
+
+  // ===== State =====
+  function getState() {
     return {
-      time: els.time.value,
-      capital: els.capital.value,
-      reach: els.reach.value,
-      skill: els.skill.value
+      time: els.time?.value || "2-5",
+      capital: els.capital?.value || "0",
+      reach: els.reach?.value || "none",
+      skill: els.skill?.value || "beginner"
     };
   }
 
-  function resetState(){
-    els.time.value = "2-5";
-    els.capital.value = "0";
-    els.reach.value = "none";
-    els.skill.value = "beginner";
+  function resetState() {
+    if (els.time) els.time.value = "2-5";
+    if (els.capital) els.capital.value = "0";
+    if (els.reach) els.reach.value = "none";
+    if (els.skill) els.skill.value = "beginner";
     updateUI();
   }
 
-  function scoreNode(nodeId, state){
+  // ===== Scoring =====
+  function scoreNode(nodeId, state) {
     const rule = RULES[nodeId] || RULES.hub;
     let score = 0;
     let max = 0;
 
-    // helper
     const add = (key, val) => {
       const w = WEIGHTS[key];
       max += w;
@@ -351,40 +406,35 @@
     add("reach", state.reach);
     add("skill", state.skill);
 
-    // Normalize 0..100
     const pct = Math.round((score / Math.max(1, max)) * 100);
 
-    // Small heuristics
-    // If time is 2-5, platform twigs should be a bit lower.
+    // Heuristics (klein, aber spürbar)
     if (state.time === "2-5" && (nodeId === "pinterest" || nodeId === "instagram" || nodeId === "platform")) {
       return Math.max(0, pct - 15);
     }
-    // Templates are harder with very low time.
     if (state.time === "2-5" && nodeId === "templates") {
       return Math.max(0, pct - 10);
     }
-    // Instagram benefits from some reach; if none, slightly reduce.
     if (state.reach === "none" && nodeId === "instagram") {
       return Math.max(0, pct - 10);
     }
     return pct;
   }
 
-  function classifyScore(pct){
+  function classifyScore(pct) {
     if (pct >= 80) return "good";
     if (pct >= 60) return "mid";
     return "low";
   }
 
-  function scoreLabel(pct){
-    // short & punchy
+  function scoreLabel(pct) {
     if (pct >= 90) return "TOP";
     if (pct >= 80) return "GUT";
     if (pct >= 60) return "OK";
     return "LOW";
   }
 
-  function applyNodeVisual(nodeEl, pct){
+  function applyNodeVisual(nodeEl, pct) {
     nodeEl.classList.remove("is-good", "is-mid", "is-low");
     const cls = classifyScore(pct);
     if (cls === "good") nodeEl.classList.add("is-good");
@@ -392,18 +442,16 @@
     else nodeEl.classList.add("is-low");
   }
 
-  function updateScores(){
+  function updateScores() {
     const state = getState();
 
-    // Update each node block
-    $$("[data-node]").forEach(el => {
+    $$("[data-node]").forEach((el) => {
       const id = el.getAttribute("data-node");
       const pct = scoreNode(id, state);
       applyNodeVisual(el, pct);
     });
 
-    // Score pills
-    $$("[data-score]").forEach(pill => {
+    $$("[data-score]").forEach((pill) => {
       const id = pill.getAttribute("data-score");
       const pct = scoreNode(id, state);
       pill.textContent = scoreLabel(pct);
@@ -413,28 +461,31 @@
     renderBest(state);
   }
 
-  function renderBest(state){
-    const candidateIds = [
-      "mini_guides","templates","ugc","micro_services","pinterest","instagram"
-    ];
+  function renderBest(state) {
+    if (!els.bestCards) return;
 
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
     const scored = candidateIds
-      .map(id => ({ id, pct: scoreNode(id, state) }))
-      .sort((a,b) => b.pct - a.pct)
-      .slice(0,3);
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 3);
 
     els.bestCards.innerHTML = "";
-    scored.forEach(item => {
+    scored.forEach((item) => {
       const node = NODES[item.id];
       const cls = classifyScore(item.pct);
 
       const card = document.createElement("div");
       card.className = `bestCard ${cls === "good" ? "is-good" : cls === "mid" ? "is-mid" : "is-low"}`;
-      card.setAttribute("role","listitem");
+      card.setAttribute("role", "listitem");
       card.tabIndex = 0;
+
       card.addEventListener("click", () => openModal(item.id));
       card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(item.id); }
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openModal(item.id);
+        }
       });
 
       card.innerHTML = `
@@ -448,15 +499,13 @@
     });
   }
 
-  function buildModalContent(node){
-    const makeList = (arr) => `<ul>${arr.map(li => `<li>${escapeHtml(li)}</li>`).join("")}</ul>`;
+  // ===== Modal =====
+  function buildModalContent(node) {
+    const makeList = (arr) => `<ul>${(arr || []).map((li) => `<li>${escapeHtml(li)}</li>`).join("")}</ul>`;
 
-    const steps = makeList(node.steps || []);
-    const forWhom = makeList(node.forWhom || []);
-
-    const moneyRows = (node.money || []).map(r => `
-      <div class="moneyRow"><span>${escapeHtml(r.left)}</span><strong>${escapeHtml(r.right)}</strong></div>
-    `).join("");
+    const moneyRows = (node.money || [])
+      .map((r) => `<div class="moneyRow"><span>${escapeHtml(r.left)}</span><strong>${escapeHtml(r.right)}</strong></div>`)
+      .join("");
 
     return `
       <div class="grid2">
@@ -466,19 +515,19 @@
         </div>
         <div class="section">
           <h4>Für wen passt das?</h4>
-          ${forWhom}
+          ${makeList(node.forWhom)}
         </div>
       </div>
 
       <div class="section">
         <h4>So startest du</h4>
-        ${steps}
+        ${makeList(node.steps)}
       </div>
 
       <div class="grid2">
         <div class="section moneyBox">
           <h4>Mögliche Gewinne</h4>
-          ${moneyRows || `<p>${escapeHtml("Richtwerte – abhängig von Umsetzung, Angebot und Markt.")}</p>`}
+          ${moneyRows || `<p>Richtwerte – abhängig von Umsetzung, Angebot und Markt.</p>`}
         </div>
         <div class="section">
           <h4>Häufigster Fehler</h4>
@@ -491,98 +540,122 @@
     `;
   }
 
-  function openModal(nodeId){
+  function openModal(nodeId) {
     const node = NODES[nodeId] || NODES.hub;
     lastOpenedId = nodeId;
 
-    els.modalKicker.textContent = node.type || "Zweig";
-    els.modalTitle.textContent = node.title || "Titel";
-    els.modalSub.textContent = node.sub || "";
-    els.modalBody.innerHTML = buildModalContent(node);
+    if (els.modalKicker) els.modalKicker.textContent = node.type || "Zweig";
+    if (els.modalTitle) els.modalTitle.textContent = node.title || "";
+    if (els.modalSub) els.modalSub.textContent = node.sub || "";
+    if (els.modalBody) els.modalBody.innerHTML = buildModalContent(node);
 
     const state = getState();
-    els.pillTime.textContent = `Zeit: ${pretty.time(state.time)}`;
-    els.pillCapital.textContent = `Kapital: ${pretty.capital(state.capital)}`;
-    els.pillReach.textContent = `Reichweite: ${pretty.reach(state.reach)}`;
-    els.pillSkill.textContent = `Skill: ${pretty.skill(state.skill)}`;
+    if (els.pillTime) els.pillTime.textContent = `Zeit: ${pretty.time(state.time)}`;
+    if (els.pillCapital) els.pillCapital.textContent = `Kapital: ${pretty.capital(state.capital)}`;
+    if (els.pillReach) els.pillReach.textContent = `Reichweite: ${pretty.reach(state.reach)}`;
+    if (els.pillSkill) els.pillSkill.textContent = `Skill: ${pretty.skill(state.skill)}`;
 
-    els.modalOverlay.hidden = false;
-    document.body.style.overflow = "hidden";
+    // Footer-Mail immer passend zum aktuell geöffneten Zweig
+    setFooterMail(node);
 
-    // focus
-    setTimeout(() => els.closeModal.focus(), 0);
+    if (els.modalOverlay) {
+      els.modalOverlay.hidden = false;
+      document.body.style.overflow = "hidden";
+      setTimeout(() => els.closeModal?.focus?.(), 0);
+    }
   }
 
-  function closeModal(){
+  function closeModal() {
+    if (!els.modalOverlay) return;
     els.modalOverlay.hidden = true;
     document.body.style.overflow = "";
-    // return focus to last opened node if present
+
     const back = $(`[data-node="${lastOpenedId}"]`);
     if (back) back.focus();
   }
 
-  function openNextBest(){
+  function openNextBest() {
     const state = getState();
-    const candidateIds = ["mini_guides","templates","ugc","micro_services","pinterest","instagram"];
-    const scored = candidateIds.map(id => ({ id, pct: scoreNode(id, state) })).sort((a,b)=>b.pct-a.pct);
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    const scored = candidateIds
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct);
 
-    // find current index
-    const idx = scored.findIndex(x => x.id === lastOpenedId);
+    const idx = scored.findIndex((x) => x.id === lastOpenedId);
     const next = scored[(idx + 1) % scored.length] || scored[0];
     openModal(next.id);
   }
 
-  function openBest3Modal(){
-    // open the best one
+  function openBest3Modal() {
     const state = getState();
-    const candidateIds = ["mini_guides","templates","ugc","micro_services","pinterest","instagram"];
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
     const best = candidateIds
-      .map(id => ({ id, pct: scoreNode(id, state) }))
-      .sort((a,b) => b.pct - a.pct)[0];
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct)[0];
     openModal(best.id);
   }
 
-  function openRandomTwig(){
-    const twigs = ["mini_guides","templates","ugc","micro_services","pinterest","instagram"];
+  function openRandomTwig() {
+    const twigs = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
     const pick = twigs[Math.floor(Math.random() * twigs.length)];
     openModal(pick);
   }
 
-  function copyModalText(){
+  // ===== Footer Mail (zweigbezogen) =====
+  function setFooterMail(node) {
+    if (!els.footerMail) return;
+
+    const subject = encodeURIComponent("Frage zum Vermögensbaum");
+    const body = encodeURIComponent(
+      node?.contactText ||
+        "Hallo, ich bin ___ und würde gern mehr erfahren. Ich stehe gerade hier: ___."
+    );
+
+    els.footerMail.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+    els.footerMail.textContent = EMAIL_TO;
+  }
+
+  // ===== Copy =====
+  function copyModalText() {
     const node = NODES[lastOpenedId] || NODES.hub;
     const state = getState();
+
     const text = [
       `Vermögensbaum – ${node.type}: ${node.title}`,
       node.sub ? `\n${node.sub}\n` : "\n",
       `Was ist das?\n${node.what}\n`,
       `Für wen passt das?\n- ${(node.forWhom || []).join("\n- ")}\n`,
       `So startest du\n- ${(node.steps || []).join("\n- ")}\n`,
-      `Mögliche Gewinne\n- ${(node.money || []).map(m => `${m.left}: ${m.right}`).join("\n- ")}\n`,
+      `Mögliche Gewinne\n- ${(node.money || []).map((m) => `${m.left}: ${m.right}`).join("\n- ")}\n`,
       `Häufigster Fehler\n${node.mistake}\n`,
       `CTA\n${node.cta}\n`,
+      `Kontakttext (E-Mail)\n${node.contactText || ""}\n`,
       `\nDein Stamm: Zeit=${pretty.time(state.time)} | Kapital=${pretty.capital(state.capital)} | Reichweite=${pretty.reach(state.reach)} | Skill=${pretty.skill(state.skill)}`
     ].join("\n");
 
-    navigator.clipboard?.writeText(text).then(() => {
-      toast("Kopiert.");
-    }).catch(() => {
-      fallbackCopy(text);
-      toast("Kopiert.");
-    });
+    navigator.clipboard?.writeText(text).then(
+      () => toast("Kopiert."),
+      () => {
+        fallbackCopy(text);
+        toast("Kopiert.");
+      }
+    );
   }
 
-  function fallbackCopy(text){
+  function fallbackCopy(text) {
     const ta = document.createElement("textarea");
     ta.value = text;
     ta.style.position = "fixed";
     ta.style.left = "-9999px";
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand("copy"); } catch(_) {}
+    try {
+      document.execCommand("copy");
+    } catch (_) {}
     document.body.removeChild(ta);
   }
 
-  function toast(msg){
+  function toast(msg) {
     const t = document.createElement("div");
     t.textContent = msg;
     t.style.position = "fixed";
@@ -591,9 +664,9 @@
     t.style.transform = "translateX(-50%)";
     t.style.padding = "10px 12px";
     t.style.borderRadius = "14px";
-    t.style.background = "rgba(255,255,255,.92)";
-    t.style.color = "#0b0c0f";
-    t.style.fontWeight = "800";
+    t.style.background = "rgba(196,255,213,.92)";
+    t.style.color = "#06110f";
+    t.style.fontWeight = "900";
     t.style.border = "1px solid rgba(0,0,0,.12)";
     t.style.boxShadow = "0 18px 40px rgba(0,0,0,.45)";
     t.style.zIndex = "999";
@@ -601,13 +674,9 @@
     setTimeout(() => t.remove(), 1200);
   }
 
-  function updateUI(){
-    updateScores();
-  }
-
-  // --- Events ---
-  function bindNodeClicks(){
-    $$("[data-node]").forEach(el => {
+  // ===== UI wiring =====
+  function bindNodeClicks() {
+    $$("[data-node]").forEach((el) => {
       const id = el.getAttribute("data-node");
       el.addEventListener("click", () => openModal(id));
       el.addEventListener("keydown", (e) => {
@@ -619,60 +688,58 @@
     });
   }
 
-  function bindControls(){
-    [els.time, els.capital, els.reach, els.skill].forEach(sel => {
+  function bindControls() {
+    [els.time, els.capital, els.reach, els.skill].forEach((sel) => {
+      if (!sel) return;
       sel.addEventListener("change", updateUI);
     });
 
-    els.reset.addEventListener("click", resetState);
-    els.openBest.addEventListener("click", openBest3Modal);
-    els.openHub.addEventListener("click", () => openModal("hub"));
-    els.openRandom.addEventListener("click", openRandomTwig);
+    els.reset?.addEventListener("click", resetState);
+    els.openBest?.addEventListener("click", openBest3Modal);
+    els.openHub?.addEventListener("click", () => openModal("hub"));
+    els.openRandom?.addEventListener("click", openRandomTwig);
 
-    els.closeModal.addEventListener("click", closeModal);
-    els.modalOverlay.addEventListener("click", (e) => {
+    els.closeModal?.addEventListener("click", closeModal);
+    els.modalOverlay?.addEventListener("click", (e) => {
       if (e.target === els.modalOverlay) closeModal();
     });
 
     document.addEventListener("keydown", (e) => {
-      if (!els.modalOverlay.hidden && e.key === "Escape") closeModal();
+      if (els.modalOverlay && !els.modalOverlay.hidden && e.key === "Escape") closeModal();
     });
 
-    els.copyBtn.addEventListener("click", copyModalText);
-    els.nextBtn.addEventListener("click", openNextBest);
+    els.copyBtn?.addEventListener("click", copyModalText);
+    els.nextBtn?.addEventListener("click", openNextBest);
   }
 
-  // --- Utils ---
-  function escapeHtml(str){
+  function updateUI() {
+    updateScores();
+  }
+
+  // ===== Utils =====
+  function escapeHtml(str) {
     return String(str)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   const pretty = {
     time: (v) => (v === "2-5" ? "2–5h" : v === "5-10" ? "5–10h" : "10+h"),
     capital: (v) => (v === "0" ? "0€" : v === "100-1000" ? "100–1.000€" : "1.000€+"),
     reach: (v) => (v === "none" ? "keine" : v === "small" ? "klein" : "vorhanden"),
-    skill: (v) => (v === "beginner" ? "Anfänger" : v === "advanced" ? "Fortgeschritten" : "Profi"),
+    skill: (v) => (v === "beginner" ? "Anfänger" : v === "advanced" ? "Fortgeschritten" : "Profi")
   };
 
-  // --- Init ---
-  function init(){
+  // ===== Init =====
+  function init() {
     bindNodeClicks();
     bindControls();
     updateUI();
-    // initial best cards ready
+    // Footer default schon gesetzt im DOMContentLoaded
   }
-// SAFETY RESET: Modal darf nie offen starten
-const modalEl = document.getElementById("modalOverlay");
-if (modalEl) {
-  modalEl.hidden = true;
-  document.body.style.overflow = "";
-}
 
   init();
-
 })();
