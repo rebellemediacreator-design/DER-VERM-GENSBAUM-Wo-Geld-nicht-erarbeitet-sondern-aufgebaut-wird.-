@@ -1,284 +1,691 @@
-<!doctype html>
-<html lang="de">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Vermögensbaum – Nebenbei Geld verdienen</title>
-  <meta name="description" content="Interaktiver Vermögensbaum: Einkommenswege entdecken, anklicken, Schritte + Gewinnspanne sehen und direkt starten." />
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="top">
-    <div class="wrap">
-      <div class="brand">
-        <div class="mark">🖤</div>
-        <div class="brandText">
-          <div class="kicker">Vermögensbaum</div>
-          <h1>Geld nebenbei ist kein Trick. Es ist ein System.</h1>
-          <p class="sub">
-            Du klickst – du siehst den Weg – du siehst den Anreiz. Keine Versprechen. Nur Optionen, sauber erklärt.
-          </p>
+(() => {
+  "use strict";
+
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+
+  const EMAIL_TO = "rebelle.media.creator@gmail.com";
+
+  // ===== Content (contactText pro Zweig) =====
+  const NODES = {
+    hub: {
+      id: "hub",
+      type: "HUB",
+      title: "Vermögensbaum",
+      sub: "Überblick · Filter · Klick in die Zweige",
+      what:
+        "Du brauchst keine 27 Ideen. Du brauchst eine Idee, die wächst. Dieser Baum zeigt dir Wege, die du nebenbei starten kannst – mit klaren Schritten und realistischen Gewinnspannen.",
+      forWhom: [
+        "Wenn du Struktur willst statt Chaos.",
+        "Wenn du Optionen sehen willst, ohne dich zu verzetteln.",
+        "Wenn du Entscheidungen nach Zeit/Kapital/Reichweite treffen willst."
+      ],
+      steps: [
+        "Wähle deinen Stamm (Zeit, Kapital, Reichweite, Skill).",
+        "Klicke einen Ast an (Digitale Produkte / Services / Plattform).",
+        "Klicke einen Zweig: du bekommst Schritte + Gewinnspanne + Fehler.",
+        "Starte mit dem kleinsten umsetzbaren Schritt – heute."
+      ],
+      money: [
+        { left: "Ergebnis", right: "Klarheit + Fokus + Startplan" },
+        { left: "Hebel", right: "Skalieren statt schuften" }
+      ],
+      mistake: "Zu viele Optionen ohne Filter → Lähmung. Zu viel Lesen ohne Tun.",
+      cta:
+        "Wenn du willst, schreib mir kurz Zeit/Woche + Startkapital + Thema – ich mache dir daraus einen 7-Tage-Startplan.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern mehr über den Vermögensbaum erfahren. Ich stehe gerade hier: ___."
+    },
+
+    digital: {
+      id: "digital",
+      type: "AST",
+      title: "Digitale Produkte",
+      sub: "Einmal bauen · oft verkaufen",
+      what:
+        "Du verkaufst kein PDF. Du verkaufst: Erleichterung, Abkürzung, Ordnung, Ergebnis.",
+      forWhom: [
+        "Wenn du erklären, strukturieren, vereinfachen kannst.",
+        "Wenn du weniger Zeit-gegen-Geld willst.",
+        "Wenn du Evergreen statt Dauerstress willst."
+      ],
+      steps: [
+        "Wähle 1 Schmerz, der heute nervt (nicht „nice to have“).",
+        "Definiere 1 Ergebnis (klar in einem Satz).",
+        "Baue ein kleines, sauberes Produkt (Guide/Template).",
+        "Landingpage + 10 Inhalte (Pins/Posts) → Verkauf."
+      ],
+      money: [
+        { left: "Richtwert", right: "500–10.000 €/Monat (je nach Produkt + Traffic)" },
+        { left: "Tempo", right: "mittel (dafür skalierbar)" }
+      ],
+      mistake: "Zu lang, zu allgemein, zu viel Wissen statt Schritte.",
+      cta: "Wenn du willst, sag mir dein Thema – ich mache dir 10 Produktideen + Preis + Struktur.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern wissen, welches digitale Produkt zu meinem Thema passt. Thema: ___."
+    },
+
+    mini_guides: {
+      id: "mini_guides",
+      type: "ZWEIG",
+      title: "Mini-Guides / PDFs",
+      sub: "Die schnellste Form, Wissen in Geld zu verwandeln",
+      what:
+        "Ein Mini-Guide ist kein Buch. Er ist ein Werkzeug: kurz, konkret, umsetzbar.",
+      forWhom: [
+        "Wenig Zeit pro Woche.",
+        "Wenig Startkapital.",
+        "Du willst schnell einen ersten Euro sehen."
+      ],
+      steps: [
+        "Wähle 1 Problem, das Menschen sofort lösen wollen.",
+        "Schreibe 7 Schritte (max. 3 Seiten + Checkliste).",
+        "Pack es in ein cleanes PDF.",
+        "Landingpage + 10 Pins/Posts.",
+        "Verkauf über Shop + Link."
+      ],
+      money: [
+        { left: "Preis", right: "9–29 €" },
+        { left: "2 Verkäufe/Tag", right: "540–1.740 €/Monat" },
+        { left: "5 Verkäufe/Tag", right: "1.350–4.350 €/Monat" }
+      ],
+      mistake: "Zu viel Theorie. Zu wenig Schritt-für-Schritt. Kein klarer Kaufgrund.",
+      cta: "Sag mir 1 Thema – ich mache dir Titel + Struktur + Checkliste + Preis + Landingpage-Text.",
+      contactText:
+        "Hallo, ich bin ___ und würde gern mehr über Mini-Guides erfahren. Mein Thema: ___. Ich hänge bei: ___."
+    },
+
+    templates: {
+      id: "templates",
+      type: "ZWEIG",
+      title: "Templates",
+      sub: "Menschen zahlen dafür, nicht bei null anfangen zu müssen",
+      what:
+        "Vorlagen, die Arbeit abnehmen: Content-Plan, Angebots-PDF, Checklisten, Dashboards, Kits.",
+      forWhom: [
+        "Du kannst Systeme bauen.",
+        "Du liebst klare Strukturen.",
+        "Du willst Evergreen statt ständig neu."
+      ],
+      steps: [
+        "Entscheide eine Kategorie (Content / Business / Planung).",
+        "Baue 1 Hero-Template + Varianten.",
+        "Schreibe eine 15-Minuten-Anleitung.",
+        "Bundle (Starter + Pro) erstellen."
+      ],
+      money: [
+        { left: "Preis", right: "19–79 € (Bundles 49–149 €)" },
+        { left: "30 Verkäufe/Monat à 49 €", right: "1.470 €" },
+        { left: "200 Verkäufe/Monat à 49 €", right: "9.800 €" }
+      ],
+      mistake: "Schön, aber ohne Nutzen. Template ohne Ergebnisversprechen = Deko.",
+      cta: "Sag mir dein Thema – ich baue dir 10 Template-Ideen + Bundle-Struktur + Shop-Text.",
+      contactText:
+        "Hallo, ich bin ___ und möchte Templates verkaufen. Thema: ___. Ich brauche Hilfe bei Bundle + Preis + Aufbau."
+    },
+
+    services: {
+      id: "services",
+      type: "AST",
+      title: "Services nebenbei",
+      sub: "Schneller Cashflow · Marktfeedback · später skalieren",
+      what:
+        "Services sind der Turbo. Nicht das Ziel. Du nutzt sie für Cash + Proof – und baust daraus später Produkte.",
+      forWhom: [
+        "Wenn du schnell Umsatz brauchst.",
+        "Wenn du Proof aufbauen willst.",
+        "Wenn du aus Services Systeme machen willst."
+      ],
+      steps: [
+        "Wähle 1 Service mit klarer Grenze (Ergebnis, Lieferzeit, Preis).",
+        "Baue 1 Vorher/Nachher-Beispiel.",
+        "Poste/Pitche konsequent mit CTA.",
+        "Dokumentiere Fragen → daraus Produkte bauen."
+      ],
+      money: [
+        { left: "Richtwert", right: "500–8.000 €/Monat (je nach Angebot + Frequenz)" },
+        { left: "Tempo", right: "schnell (dafür weniger skalierbar)" }
+      ],
+      mistake: "„Ich kann alles“ → niemand kauft. Fokus schlägt Talent.",
+      cta: "Sag mir, was du kannst – ich mache dir 3 Angebote (Einsteiger/Pro/Retainer) als Copy-Paste.",
+      contactText:
+        "Hallo, ich bin ___ und möchte nebenbei mit einem Service starten. Ich kann gut: ___. Ich brauche Hilfe bei Angebot + Preis + Grenze."
+    },
+
+    ugc: {
+      id: "ugc",
+      type: "ZWEIG",
+      title: "UGC für Marken",
+      sub: "Du brauchst keine Reichweite. Du brauchst ein sauberes Ergebnis.",
+      what:
+        "Du lieferst Foto/Video-Material, das Marken als Werbung nutzen. Ergebnis > Follower.",
+      forWhom: [
+        "Wenn du schnell starten willst.",
+        "Wenn du lieber Output lieferst als Follower jagst.",
+        "Wenn du klare Pakete verkaufen willst."
+      ],
+      steps: [
+        "Wähle 1 Branche (Fitness, Beauty, Food, Tech).",
+        "Baue 6 Beispiel-Clips (Dummy reicht).",
+        "Erstelle 3 Pakete (klarer Umfang).",
+        "Pitch 20 Marken/Woche."
+      ],
+      money: [
+        { left: "Einstieg", right: "150–600 € pro Paket" },
+        { left: "4 Pakete/Monat", right: "600–2.400 €" },
+        { left: "10 Pakete/Monat", right: "1.500–6.000 €" }
+      ],
+      mistake: "Kein Fokus + kein Paket = endlose Anfragen ohne Abschluss.",
+      cta: "Sag mir deine Branche – ich baue dir 3 UGC-Pakete inkl. Grenzen + Pitch-Text.",
+      contactText:
+        "Hallo, ich bin ___ und möchte mit UGC starten. Branche: ___. Ich brauche Hilfe bei Paketen + Pitch."
+    },
+
+    micro_services: {
+      id: "micro_services",
+      type: "ZWEIG",
+      title: "Micro-Dienstleistungen",
+      sub: "Kleine Leistung · klare Grenze · schneller Verkauf",
+      what:
+        "Micro-Services liefern ein klares Ergebnis in kurzer Zeit – ohne auszuufern.",
+      forWhom: [
+        "Wenn du klare Sprints magst (48h / 7 Tage).",
+        "Wenn du schnell Proof willst.",
+        "Wenn du ohne großes Setup starten willst."
+      ],
+      steps: [
+        "Definiere 1 Ergebnis (nicht 10 Aufgaben).",
+        "Setze Lieferzeit + Preis + Express-Aufpreis.",
+        "Erstelle 1 Beispielfall (Vorher/Nachher).",
+        "Poste regelmäßig: Problem → Lösung → Angebot."
+      ],
+      money: [
+        { left: "Preis", right: "99–399 € pro Micro-Service" },
+        { left: "10 Verkäufe/Monat", right: "990–3.990 €" },
+        { left: "25 Verkäufe/Monat", right: "2.475–9.975 €" }
+      ],
+      mistake: "Zu billig, zu offen, zu viele Sonderwünsche.",
+      cta: "Sag mir deine Stärke – ich mache dir 10 Micro-Services inkl. Preisschild + Grenzen.",
+      contactText:
+        "Hallo, ich bin ___ und möchte Micro-Services anbieten. Stärke: ___. Ich brauche Hilfe bei Angebot + Preis + Grenzen."
+    },
+
+    platform: {
+      id: "platform",
+      type: "AST",
+      title: "Plattform-Einkommen",
+      sub: "Reichweite als Motor · Funnels als Getriebe",
+      what:
+        "Plattformen zahlen nicht fürs Posten. Sie zahlen, wenn dein Funnel abschließt.",
+      forWhom: [
+        "Wenn du Sichtbarkeit als Asset willst.",
+        "Wenn du Systeme magst (Hook → CTA → Landingpage)."
+      ],
+      steps: [
+        "Wähle 1 Plattform (Pinterest oder Instagram).",
+        "Wähle 1 Angebot als Ziel.",
+        "Baue eine Landingpage, die abschließt.",
+        "Baue Content als wiederholbares Format."
+      ],
+      money: [
+        { left: "Richtwert", right: "500–20.000 €/Monat (je nach Angebot + System)" },
+        { left: "Tempo", right: "Pinterest: langsam · Instagram: schneller" }
+      ],
+      mistake: "Ohne Angebot ist alles Theater. Ohne CTA keine Verkäufe.",
+      cta: "Sag mir dein Produkt – ich mache dir Funnel-Outline + Content-Formate + CTA-Flow.",
+      contactText:
+        "Hallo, ich bin ___ und möchte Plattform-Einkommen als System aufbauen. Thema/Produkt: ___."
+    },
+
+    pinterest: {
+      id: "pinterest",
+      type: "ZWEIG",
+      title: "Pinterest Evergreen",
+      sub: "Langsam anlaufend. Dafür monatelang Geld mit einem Pin.",
+      what:
+        "Pins bringen Suchtraffic auf Landingpages. Dort verkauft dein Mini-Produkt (oder sammelt Leads).",
+      forWhom: [
+        "Wenn du geduldig bist (2–4 Monate Aufbau).",
+        "Wenn du Evergreen willst statt Dauer-Druck."
+      ],
+      steps: [
+        "1 Thema = 1 Landingpage.",
+        "10 Pins pro Landingpage.",
+        "3 Boards sauber benennen.",
+        "Jede Woche 10 neue Pins."
+      ],
+      money: [
+        { left: "Nach 2–4 Monaten", right: "500–3.000 €/Monat (bei Konsequenz)" },
+        { left: "Später möglich", right: "3.000–15.000 €/Monat (mit Produkt-Stack)" }
+      ],
+      mistake: "Zu früh aufgeben. Pinterest ist kein TikTok.",
+      cta: "Sag mir dein Thema – ich baue dir Boards + Pin-Titel + Landingpage-Outline.",
+      contactText:
+        "Hallo, ich bin ___ und möchte Pinterest Evergreen starten. Thema: ___. Ich brauche Hilfe bei Boards/Pins/Landingpage."
+    },
+
+    instagram: {
+      id: "instagram",
+      type: "ZWEIG",
+      title: "Instagram Funnel",
+      sub: "Nicht posten. Leiten. Führen. Abschließen.",
+      what:
+        "Hook-Post → Story → Link/DM → Landingpage → Kauf. Nicht hübsch sein. Wirksam sein.",
+      forWhom: [
+        "Wenn du schnellere Reaktionen willst.",
+        "Wenn du Story/DM nutzen kannst."
+      ],
+      steps: [
+        "1 Produkt/1 Angebot wählen.",
+        "7 Content-Formate definieren.",
+        "3 Posts/Woche + Stories.",
+        "1 CTA-Post/Woche."
+      ],
+      money: [
+        { left: "Stabil", right: "1.000–5.000 €/Monat (sauber umgesetzt)" },
+        { left: "Wenn System sitzt", right: "5.000–20.000 €/Monat (Offer + Proof + Funnel)" }
+      ],
+      mistake: "Zu viel Content ohne Abschluss. Ohne CTA keine Verkäufe.",
+      cta: "Sag mir dein Produkt – ich schreibe dir Hooks + Story-Skripte + CTA-Posts.",
+      contactText:
+        "Hallo, ich bin ___ und möchte einen Instagram-Funnel aufbauen. Thema/Produkt: ___. Ich brauche Hilfe bei Hooks/Stories/CTA + Landingpage."
+    }
+  };
+
+  // ===== scoring rules =====
+  const RULES = {
+    digital: { time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    services:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    platform:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+
+    mini_guides:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    templates:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+
+    ugc:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    micro_services:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+
+    pinterest:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+    instagram:{ time:["5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] },
+
+    hub:{ time:["2-5","5-10","10+"], capital:["0","100-1000","1000+"], reach:["none","small","existing"], skill:["beginner","advanced","pro"] }
+  };
+
+  const WEIGHTS = { time: 4, capital: 2, reach: 2, skill: 2 };
+
+  // ===== elements =====
+  const els = {
+    time: $("#timePerWeek"),
+    capital: $("#capital"),
+    reach: $("#reach"),
+    skill: $("#skill"),
+
+    reset: $("#resetBtn"),
+    openBest: $("#openBestBtn"),
+    openBest2: $("#openBestBtn2"),
+    openHub: $("#openHubBtn"),
+    openHub2: $("#openHubBtn2"),
+    openRandom: $("#openRandomBtn"),
+
+    bestCards: $("#bestCards"),
+
+    modalOverlay: $("#modalOverlay"),
+    closeModal: $("#closeModalBtn"),
+    modalKicker: $("#modalKicker"),
+    modalTitle: $("#modalTitle"),
+    modalSub: $("#modalSub"),
+    modalBody: $("#modalBody"),
+
+    pillTime: $("#pillTime"),
+    pillCapital: $("#pillCapital"),
+    pillReach: $("#pillReach"),
+    pillSkill: $("#pillSkill"),
+
+    emailBtn: $("#emailBtn"),
+    nextBtn: $("#nextBtn"),
+
+    footerMail: $("#footerMail")
+  };
+
+  let lastOpenedId = "hub";
+
+  // ===== safety: modal never open at start =====
+  document.addEventListener("DOMContentLoaded", () => {
+    const modalEl = document.getElementById("modalOverlay");
+    if (modalEl) {
+      modalEl.hidden = true;
+      document.body.style.overflow = "";
+    }
+    setFooterMail(NODES.hub);
+  });
+
+  function getState() {
+    return {
+      time: els.time?.value || "2-5",
+      capital: els.capital?.value || "0",
+      reach: els.reach?.value || "none",
+      skill: els.skill?.value || "beginner"
+    };
+  }
+
+  function resetState() {
+    if (els.time) els.time.value = "2-5";
+    if (els.capital) els.capital.value = "0";
+    if (els.reach) els.reach.value = "none";
+    if (els.skill) els.skill.value = "beginner";
+    updateUI();
+  }
+
+  function scoreNode(nodeId, state) {
+    const rule = RULES[nodeId] || RULES.hub;
+    let score = 0, max = 0;
+
+    const add = (key, val) => {
+      const w = WEIGHTS[key];
+      max += w;
+      if ((rule[key] || []).includes(val)) score += w;
+    };
+
+    add("time", state.time);
+    add("capital", state.capital);
+    add("reach", state.reach);
+    add("skill", state.skill);
+
+    let pct = Math.round((score / Math.max(1, max)) * 100);
+
+    // small heuristics
+    if (state.time === "2-5" && (nodeId === "pinterest" || nodeId === "instagram" || nodeId === "platform")) pct = Math.max(0, pct - 15);
+    if (state.time === "2-5" && nodeId === "templates") pct = Math.max(0, pct - 10);
+    if (state.reach === "none" && nodeId === "instagram") pct = Math.max(0, pct - 10);
+
+    return pct;
+  }
+
+  function classifyScore(pct) {
+    if (pct >= 80) return "good";
+    if (pct >= 60) return "mid";
+    return "low";
+  }
+
+  function scoreLabel(pct) {
+    if (pct >= 90) return "TOP";
+    if (pct >= 80) return "GUT";
+    if (pct >= 60) return "OK";
+    return "LOW";
+  }
+
+  function applyNodeVisual(nodeEl, pct) {
+    nodeEl.classList.remove("is-good", "is-mid", "is-low");
+    const cls = classifyScore(pct);
+    if (cls === "good") nodeEl.classList.add("is-good");
+    else if (cls === "mid") nodeEl.classList.add("is-mid");
+    else nodeEl.classList.add("is-low");
+  }
+
+  function updateScores() {
+    const state = getState();
+
+    $$("[data-node]").forEach((el) => {
+      const id = el.getAttribute("data-node");
+      const pct = scoreNode(id, state);
+      applyNodeVisual(el, pct);
+    });
+
+    $$("[data-score]").forEach((pill) => {
+      const id = pill.getAttribute("data-score");
+      const pct = scoreNode(id, state);
+      pill.textContent = scoreLabel(pct);
+      pill.dataset.pct = String(pct);
+    });
+
+    renderBest(state);
+  }
+
+  function renderBest(state) {
+    if (!els.bestCards) return;
+
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    const scored = candidateIds
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct)
+      .slice(0, 3);
+
+    els.bestCards.innerHTML = "";
+    scored.forEach((item) => {
+      const node = NODES[item.id];
+      const cls = classifyScore(item.pct);
+
+      const card = document.createElement("div");
+      card.className = `bestCard ${cls === "good" ? "is-good" : cls === "mid" ? "is-mid" : "is-low"}`;
+      card.setAttribute("role", "listitem");
+      card.tabIndex = 0;
+
+      card.addEventListener("click", () => openModal(item.id));
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(item.id); }
+      });
+
+      card.innerHTML = `
+        <div class="bestTop">
+          <div class="bestTitle">${escapeHtml(node.title)}</div>
+          <div class="badge">${scoreLabel(item.pct)}</div>
+        </div>
+        <div class="bestSub">${escapeHtml(node.sub)}</div>
+      `;
+      els.bestCards.appendChild(card);
+    });
+  }
+
+  function buildModalContent(node) {
+    const makeList = (arr) => `<ul>${(arr || []).map((li) => `<li>${escapeHtml(li)}</li>`).join("")}</ul>`;
+
+    const moneyRows = (node.money || [])
+      .map((r) => `<div class="moneyRow"><span>${escapeHtml(r.left)}</span><strong>${escapeHtml(r.right)}</strong></div>`)
+      .join("");
+
+    return `
+      <div class="grid2">
+        <div class="section">
+          <h4>Was ist das?</h4>
+          <p>${escapeHtml(node.what || "")}</p>
+        </div>
+        <div class="section">
+          <h4>Für wen passt das?</h4>
+          ${makeList(node.forWhom)}
         </div>
       </div>
 
-      <section class="controls" aria-label="Stamm-Filter">
-        <div class="controlsHeader">
-          <h2>Dein Stamm</h2>
-          <p class="muted">Wähle grob aus. Der Baum markiert passende Wege automatisch.</p>
-        </div>
-
-        <div class="grid4">
-          <div class="controlCard">
-            <label for="timePerWeek">Zeit pro Woche</label>
-            <select id="timePerWeek">
-              <option value="2-5">2–5 Stunden</option>
-              <option value="5-10">5–10 Stunden</option>
-              <option value="10+">10+ Stunden</option>
-            </select>
-          </div>
-
-          <div class="controlCard">
-            <label for="capital">Startkapital</label>
-            <select id="capital">
-              <option value="0">0 €</option>
-              <option value="100-1000">100–1.000 €</option>
-              <option value="1000+">1.000 €+</option>
-            </select>
-          </div>
-
-          <div class="controlCard">
-            <label for="reach">Reichweite</label>
-            <select id="reach">
-              <option value="none">keine</option>
-              <option value="small">klein</option>
-              <option value="existing">vorhanden</option>
-            </select>
-          </div>
-
-          <div class="controlCard">
-            <label for="skill">Skill-Level</label>
-            <select id="skill">
-              <option value="beginner">Anfänger</option>
-              <option value="advanced">Fortgeschritten</option>
-              <option value="pro">Profi</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="controlsFooter">
-          <button class="btn" id="resetBtn" type="button">Zurücksetzen</button>
-          <button class="btn primary" id="openBestBtn" type="button">Zeig mir die besten 3</button>
-        </div>
-      </section>
-    </div>
-  </header>
-
-  <main class="main">
-    <div class="wrap">
-      <section class="treeShell" aria-label="Vermögensbaum">
-        <div class="treeHeader">
-          <h2>Der Baum</h2>
-          <div class="legend">
-            <span class="dot good"></span><span>passt gut</span>
-            <span class="dot mid"></span><span>passt teilweise</span>
-            <span class="dot low"></span><span>passt weniger</span>
-          </div>
-        </div>
-
-        <!-- Tree layout -->
-        <div class="tree">
-          <!-- trunk -->
-          <div class="trunk">
-            <div class="node trunkNode" data-node="hub" role="button" tabindex="0" aria-label="Vermögensbaum Start">
-              <div class="nodeTop">
-                <span class="tag">Hub</span>
-                <span class="scorePill" data-score="hub">—</span>
-              </div>
-              <div class="nodeTitle">Vermögensbaum</div>
-              <div class="nodeMeta">Überblick · Filter · Klick in die Zweige</div>
-            </div>
-          </div>
-
-          <div class="branches">
-            <!-- branch 1 -->
-            <div class="branchCol">
-              <div class="node branchNode" data-node="digital" role="button" tabindex="0" aria-label="Ast Digitale Produkte">
-                <div class="nodeTop">
-                  <span class="tag">Ast</span>
-                  <span class="scorePill" data-score="digital">—</span>
-                </div>
-                <div class="nodeTitle">Digitale Produkte</div>
-                <div class="nodeMeta">Einmal bauen · oft verkaufen</div>
-              </div>
-
-              <div class="twigList">
-                <div class="node twigNode" data-node="mini_guides" role="button" tabindex="0" aria-label="Zweig Mini-Guides und PDFs">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="mini_guides">—</span>
-                  </div>
-                  <div class="nodeTitle">Mini-Guides / PDFs</div>
-                  <div class="nodeMeta">schnellster Start</div>
-                </div>
-
-                <div class="node twigNode" data-node="templates" role="button" tabindex="0" aria-label="Zweig Templates">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="templates">—</span>
-                  </div>
-                  <div class="nodeTitle">Templates</div>
-                  <div class="nodeMeta">bester Evergreen</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- branch 2 -->
-            <div class="branchCol">
-              <div class="node branchNode" data-node="services" role="button" tabindex="0" aria-label="Ast Services nebenbei">
-                <div class="nodeTop">
-                  <span class="tag">Ast</span>
-                  <span class="scorePill" data-score="services">—</span>
-                </div>
-                <div class="nodeTitle">Services nebenbei</div>
-                <div class="nodeMeta">schneller Cashflow</div>
-              </div>
-
-              <div class="twigList">
-                <div class="node twigNode" data-node="ugc" role="button" tabindex="0" aria-label="Zweig UGC für Marken">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="ugc">—</span>
-                  </div>
-                  <div class="nodeTitle">UGC für Marken</div>
-                  <div class="nodeMeta">kein Influencer nötig</div>
-                </div>
-
-                <div class="node twigNode" data-node="micro_services" role="button" tabindex="0" aria-label="Zweig Micro-Services">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="micro_services">—</span>
-                  </div>
-                  <div class="nodeTitle">Micro-Dienstleistungen</div>
-                  <div class="nodeMeta">klarer Scope, schnell verkauft</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- branch 3 -->
-            <div class="branchCol">
-              <div class="node branchNode" data-node="platform" role="button" tabindex="0" aria-label="Ast Plattform-Einkommen">
-                <div class="nodeTop">
-                  <span class="tag">Ast</span>
-                  <span class="scorePill" data-score="platform">—</span>
-                </div>
-                <div class="nodeTitle">Plattform-Einkommen</div>
-                <div class="nodeMeta">Reichweite + Funnel</div>
-              </div>
-
-              <div class="twigList">
-                <div class="node twigNode" data-node="pinterest" role="button" tabindex="0" aria-label="Zweig Pinterest Evergreen">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="pinterest">—</span>
-                  </div>
-                  <div class="nodeTitle">Pinterest Evergreen</div>
-                  <div class="nodeMeta">langsam, stabil</div>
-                </div>
-
-                <div class="node twigNode" data-node="instagram" role="button" tabindex="0" aria-label="Zweig Instagram Funnel">
-                  <div class="nodeTop">
-                    <span class="tag">Zweig</span>
-                    <span class="scorePill" data-score="instagram">—</span>
-                  </div>
-                  <div class="nodeTitle">Instagram Funnel</div>
-                  <div class="nodeMeta">führen, abschließen</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="treeFooter">
-          <div class="note">
-            <strong>Hinweis:</strong> Gewinne sind Richtwerte. Entscheidend sind Zeit, Umsetzung, Angebot und Markt. Keine Garantien.
-          </div>
-          <div class="ctaRow">
-            <button class="btn primary" id="openHubBtn" type="button">Start: Überblick öffnen</button>
-            <button class="btn" id="openRandomBtn" type="button">Zufälligen Zweig zeigen</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="bestList" aria-label="Empfohlene Wege">
-        <div class="bestHeader">
-          <h2>Empfohlen für deinen Stamm</h2>
-          <p class="muted">Die drei passendsten Optionen (nach Filter-Score). Klick = Details.</p>
-        </div>
-        <div id="bestCards" class="bestCards" role="list"></div>
-      </section>
-
-      <footer class="foot">
-        <div class="wrap footInner">
-          <div class="footLeft">
-            <div class="kicker">🖤</div>
-            <div class="muted">Vermögensbaum MVP · offline-fähig · 1 Datei pro Schicht</div>
-          </div>
-          <div class="footRight muted">
-            Tipp: Wenn du das als Multi-Page willst, sage „Multi-Page-Version“ – dann baue ich dir alle Unterseiten aus den Modals.
-          </div>
-        </div>
-      </footer>
-    </div>
-  </main>
-
-  <!-- Modal -->
-  <div class="modalOverlay" id="modalOverlay" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modalTop">
-        <div class="modalTitleWrap">
-          <div class="modalKicker" id="modalKicker">Zweig</div>
-          <h3 id="modalTitle">Titel</h3>
-          <p class="modalSub" id="modalSub">Subline</p>
-        </div>
-        <button class="iconBtn" id="closeModalBtn" aria-label="Schließen" title="Schließen">✕</button>
+      <div class="section">
+        <h4>So startest du</h4>
+        ${makeList(node.steps)}
       </div>
 
-      <div class="modalBody" id="modalBody"></div>
-
-      <div class="modalBottom">
-        <div class="modalMeta">
-          <span class="pill" id="pillTime">Zeit: —</span>
-          <span class="pill" id="pillCapital">Kapital: —</span>
-          <span class="pill" id="pillReach">Reichweite: —</span>
-          <span class="pill" id="pillSkill">Skill: —</span>
+      <div class="grid2">
+        <div class="section">
+          <h4>Mögliche Gewinne</h4>
+          ${moneyRows || `<p>Richtwerte – abhängig von Umsetzung, Angebot und Markt.</p>`}
         </div>
-        <div class="modalActions">
-          <button class="btn" id="copyBtn" type="button">Text kopieren</button>
-          <button class="btn primary" id="nextBtn" type="button">Nächster passender</button>
+        <div class="section">
+          <h4>Häufigster Fehler</h4>
+          <p>${escapeHtml(node.mistake || "")}</p>
+          <div style="height:10px"></div>
+          <h4>Nächster Schritt</h4>
+          <p>${escapeHtml(node.cta || "")}</p>
         </div>
       </div>
-    </div>
-  </div>
-<footer class="appFooter">
-  <div class="footerInner">
-    <p class="footerBrand">
-      🖤 <strong>RE:BELLE™ Media</strong> – wir begleiten Menschen dabei,  
-      aus Ideen funktionierende Systeme zu machen.
-    </p>
+    `;
+  }
 
-    <p class="footerLinks">
-      🖤 <a href="https://www.newwomanintheshop.com" target="_blank">newwomanintheshop.com</a>
-      🖤 <a href="https://www.rebellemedia.de" target="_blank">rebellemedia.de</a>
-    </p>
+  function openModal(nodeId) {
+    const node = NODES[nodeId] || NODES.hub;
+    lastOpenedId = nodeId;
 
-    <p class="footerContact">
-      🖤 <a id="footerMail" href="mailto:rebelle.media.creator@gmail.com">
-        rebelle.media.creator@gmail.com
-      </a>
-    </p>
-  </div>
-</footer>
+    if (els.modalKicker) els.modalKicker.textContent = node.type || "ZWEIG";
+    if (els.modalTitle) els.modalTitle.textContent = node.title || "";
+    if (els.modalSub) els.modalSub.textContent = node.sub || "";
+    if (els.modalBody) els.modalBody.innerHTML = buildModalContent(node);
 
-  <script src="app.js"></script>
-</body>
-</html>
+    const state = getState();
+    if (els.pillTime) els.pillTime.textContent = `Zeit: ${pretty.time(state.time)}`;
+    if (els.pillCapital) els.pillCapital.textContent = `Kapital: ${pretty.capital(state.capital)}`;
+    if (els.pillReach) els.pillReach.textContent = `Reichweite: ${pretty.reach(state.reach)}`;
+    if (els.pillSkill) els.pillSkill.textContent = `Skill: ${pretty.skill(state.skill)}`;
+
+    setFooterMail(node);
+
+    if (els.modalOverlay) {
+      els.modalOverlay.hidden = false;
+      document.body.style.overflow = "hidden";
+      setTimeout(() => els.closeModal?.focus?.(), 0);
+    }
+  }
+
+  function closeModal() {
+    if (!els.modalOverlay) return;
+    els.modalOverlay.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function openNextBest() {
+    const state = getState();
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    const scored = candidateIds
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct);
+
+    const idx = scored.findIndex((x) => x.id === lastOpenedId);
+    const next = scored[(idx + 1) % scored.length] || scored[0];
+    openModal(next.id);
+  }
+
+  function openBestModal() {
+    const state = getState();
+    const candidateIds = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    const best = candidateIds
+      .map((id) => ({ id, pct: scoreNode(id, state) }))
+      .sort((a, b) => b.pct - a.pct)[0];
+    openModal(best.id);
+  }
+
+  function openRandomTwig() {
+    const twigs = ["mini_guides", "templates", "ugc", "micro_services", "pinterest", "instagram"];
+    openModal(twigs[Math.floor(Math.random() * twigs.length)]);
+  }
+
+  // ===== E-Mail senden (zweigbezogen + Stamm + Kurzüberblick) =====
+  function buildEmailBody(node) {
+    const s = getState();
+
+    const lines = [
+      node.contactText || "Hallo, ich bin ___ und würde gern mehr erfahren. Ich stehe gerade hier: ___.",
+      "",
+      "— Kontext (aus der App) —",
+      `Zweig: ${node.title}`,
+      node.sub ? `Subline: ${node.sub}` : "",
+      "",
+      "— Dein Stamm —",
+      `Zeit/Woche: ${pretty.time(s.time)}`,
+      `Kapital: ${pretty.capital(s.capital)}`,
+      `Reichweite: ${pretty.reach(s.reach)}`,
+      `Skill: ${pretty.skill(s.skill)}`,
+      "",
+      "— Meine Frage / mein Ziel —",
+      "Ich will konkret erreichen: ___",
+      "Ich brauche Hilfe bei: ___",
+      "",
+      "Danke!"
+    ].filter(Boolean);
+
+    return lines.join("\n");
+  }
+
+  function sendEmailForCurrentNode() {
+    const node = NODES[lastOpenedId] || NODES.hub;
+    const subject = encodeURIComponent(`Vermögensbaum – ${node.title}`);
+    const body = encodeURIComponent(buildEmailBody(node));
+    window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+  }
+
+  // ===== Footer Mail (immer zweigbezogen) =====
+  function setFooterMail(node) {
+    if (!els.footerMail) return;
+    const subject = encodeURIComponent(`Vermögensbaum – ${node.title || "Frage"}`);
+    const body = encodeURIComponent(buildEmailBody(node || NODES.hub));
+    els.footerMail.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+    els.footerMail.textContent = EMAIL_TO;
+  }
+
+  // ===== Wiring =====
+  function bindNodeClicks() {
+    $$("[data-node]").forEach((el) => {
+      const id = el.getAttribute("data-node");
+      el.addEventListener("click", () => openModal(id));
+      el.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openModal(id); }
+      });
+    });
+  }
+
+  function bindControls() {
+    [els.time, els.capital, els.reach, els.skill].forEach((sel) => {
+      if (!sel) return;
+      sel.addEventListener("change", updateUI);
+    });
+
+    els.reset?.addEventListener("click", resetState);
+
+    els.openBest?.addEventListener("click", () => {
+      openBestModal();
+    });
+    els.openBest2?.addEventListener("click", () => {
+      openBestModal();
+    });
+
+    els.openHub?.addEventListener("click", () => openModal("hub"));
+    els.openHub2?.addEventListener("click", () => openModal("hub"));
+
+    els.openRandom?.addEventListener("click", openRandomTwig);
+
+    els.closeModal?.addEventListener("click", closeModal);
+    els.modalOverlay?.addEventListener("click", (e) => {
+      if (e.target === els.modalOverlay) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (els.modalOverlay && !els.modalOverlay.hidden && e.key === "Escape") closeModal();
+    });
+
+    els.emailBtn?.addEventListener("click", sendEmailForCurrentNode);
+    els.nextBtn?.addEventListener("click", openNextBest);
+  }
+
+  function updateUI() {
+    updateScores();
+  }
+
+  // ===== Utils =====
+  function escapeHtml(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  const pretty = {
+    time: (v) => (v === "2-5" ? "2–5h" : v === "5-10" ? "5–10h" : "10+h"),
+    capital: (v) => (v === "0" ? "0€" : v === "100-1000" ? "100–1.000€" : "1.000€+"),
+    reach: (v) => (v === "none" ? "keine" : v === "small" ? "klein" : "vorhanden"),
+    skill: (v) => (v === "beginner" ? "Anfänger" : v === "advanced" ? "Fortgeschritten" : "Profi")
+  };
+
+  // ===== Init =====
+  function init() {
+    bindNodeClicks();
+    bindControls();
+    updateUI();
+    setFooterMail(NODES.hub);
+  }
+
+  init();
+})();
